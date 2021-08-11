@@ -1,0 +1,14 @@
+[server]
+port = 8888
+
+[etcd]
+endpoints = ["127.0.0.1:2379"]
+
+[mysql]
+dsn = "admin:admin@tcp(127.0.01:3306)/cacos?timeout=1s&readTimeout=1s&writeTimeout=1s&parseTime=true&charset=utf8mb4&loc=Local"
+MaxOpenConns  = 100
+MaxIdleConns  =  1
+ConnMaxLifetime = "60s"
+ConnMaxIdleTime = "60s"
+
+[log]

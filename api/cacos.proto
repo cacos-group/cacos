@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option go_package = "github.com/cacos-group/cacos/apiV1";
+
+package apiV1;
+
+// The greeting service definition.
+service Cacos {
+  // Sends a greeting
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+}
+
+// The request message containing the user's name.
+message HelloRequest {
+  string name = 1;
+}
+
+// The response message containing the greetings
+message HelloReply {
+  string message = 1;
+}
