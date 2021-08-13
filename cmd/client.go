@@ -16,14 +16,23 @@ func main() {
 
 	client := api.NewCacosClient(cc)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
-	reply, err := client.SayHello(ctx, &api.HelloRequest{
-		Name: "adasdsa",
+	//reply, err := client.AuthLogin(ctx, &api.LoginRequest{
+	//	Username: "adasdsa",
+	//	Password: "ssd",
+	//})
+	//reply, err := client.NamespaceList(ctx, &api.NamespaceListReq{})
+	//if err != nil {
+	//	panic(err)
+	//}
+
+	reply, err := client.AppList(ctx, &api.AppListReq{
+		Namespace: "namespace5",
 	})
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println(reply, 1111)
+	fmt.Printf("%+v", reply.AppList)
 }

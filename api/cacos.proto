@@ -8,6 +8,9 @@ package apiV1;
 service Cacos {
   // Sends a greeting
   rpc SayHello (HelloRequest) returns (HelloReply) {}
+  rpc AuthLogin (LoginRequest) returns (LoginReply) {}
+  rpc NamespaceList (NamespaceListReq) returns (NamespaceListReply) {}
+  rpc AppList (AppListReq) returns (AppListReply) {}
 }
 
 // The request message containing the user's name.
@@ -18,4 +21,37 @@ message HelloRequest {
 // The response message containing the greetings
 message HelloReply {
   string message = 1;
+}
+
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message LoginReply {
+  string token = 1;
+}
+
+message NamespaceListReq {
+}
+
+message Namespace {
+  string namespace = 1;
+}
+
+message NamespaceListReply {
+  repeated Namespace namespace_list= 1;
+}
+
+message App {
+  string namespace = 1;
+  string app = 2;
+}
+
+message AppListReq {
+  string namespace = 1;
+}
+
+message AppListReply {
+  repeated App app_list= 1;
 }

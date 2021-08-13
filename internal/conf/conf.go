@@ -34,6 +34,9 @@ type log struct {
 }
 
 type etcd struct {
+	Endpoints []string
+	Username  string
+	Password  string
 }
 
 type mysql struct {
