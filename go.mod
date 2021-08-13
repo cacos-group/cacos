@@ -7,6 +7,7 @@ require (
 	github.com/cacos-group/cacos-server-sdk v0.0.0-20210811023812-1441d4db6e76
 	github.com/go-kratos/kratos/v2 v2.0.3
 	github.com/google/wire v0.5.0
+	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	go.opentelemetry.io/otel/trace v1.0.0-RC1
 	go.uber.org/zap v1.17.0

@@ -16,7 +16,7 @@ func main() {
 
 	client := api.NewCacosClient(cc)
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 	reply, err := client.SayHello(ctx, &api.HelloRequest{
 		Name: "adasdsa",

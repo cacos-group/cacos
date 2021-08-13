@@ -26,6 +26,7 @@ type server struct {
 	Name    string
 	Version string
 	Port    int
+	Timeout Duration
 }
 
 type log struct {

@@ -5,6 +5,7 @@ import (
 	"github.com/cacos-group/cacos-server-sdk/entry"
 	api "github.com/cacos-group/cacos/api"
 	"github.com/google/wire"
+	"time"
 )
 
 var Provider = wire.NewSet(New, wire.Bind(new(api.CacosServer), new(*Service)))
@@ -29,6 +30,7 @@ func newService(cacos entry.Cacos) (s *Service, cf func(), err error) {
 }
 
 func (s *Service) SayHello(ctx context.Context, req *api.HelloRequest) (reply *api.HelloReply, err error) {
+	time.Sleep(4 * time.Second)
 	return &api.HelloReply{
 		Message: req.Name,
 	}, nil
