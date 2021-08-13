@@ -13,7 +13,7 @@ import (
 
 // Injectors from wire.go:
 
-//go:generate ~/go/bin/wire
+//bash ~/go/bin/wire
 func InitApp(config *conf.Config) (*App, func(), error) {
 	cacos, cleanup, err := resource.NewCacos(config)
 	if err != nil {
@@ -25,7 +25,8 @@ func InitApp(config *conf.Config) (*App, func(), error) {
 		return nil, nil, err
 	}
 	server := resource.NewGRPCServer(config)
-	app, cleanup3, err := NewApp(config, serviceService, server)
+	logger := resource.NewLog(config)
+	app, cleanup3, err := NewApp(config, serviceService, server, logger)
 	if err != nil {
 		cleanup2()
 		cleanup()

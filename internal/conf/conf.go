@@ -4,7 +4,6 @@ import (
 	"flag"
 	"github.com/BurntSushi/toml"
 	"github.com/cacos-group/cacos-server-sdk/api"
-	"log"
 	"time"
 )
 
@@ -20,10 +19,17 @@ type Config struct {
 	Etcd   api.EtcdConfig
 	Mysql  mysql
 	Server server
+	Log    log
 }
 
 type server struct {
-	Port int
+	Name    string
+	Version string
+	Port    int
+}
+
+type log struct {
+	LogName string
 }
 
 type etcd struct {
@@ -51,9 +57,7 @@ func (d *Duration) UnmarshalText(text []byte) error {
 
 func Init() (config *Config) {
 	if _, err := toml.DecodeFile(confPath, &config); err != nil {
-		log.Fatalf("err: %v", err)
-		return
+		panic(err)
 	}
-
 	return
 }

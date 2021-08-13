@@ -13,5 +13,5 @@ import (
 //bash ~/go/bin/wire
 func InitApp(config *conf.Config) (*App, func(), error) {
 
-	panic(wire.Build(NewApp, service.Provider, resource.NewGRPCServer, resource.NewCacos))
+	panic(wire.Build(NewApp, service.Provider, resource.NewGRPCServer, resource.NewCacos, resource.NewLog))
 }

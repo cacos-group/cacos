@@ -1,4 +1,6 @@
 [server]
+name = ""
+version = ""
 port = 8888
 
 [etcd]
@@ -12,3 +14,4 @@ ConnMaxLifetime = "60s"
 ConnMaxIdleTime = "60s"
 
 [log]
+logName = "./logs/test2.log"
