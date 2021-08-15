@@ -1,6 +1,14 @@
+// 定义项目 API 的 proto 文件 可以同时描述 gRPC 和 HTTP API
+// protobuf 文件参考:
+//  - https://developers.google.com/protocol-buffers/
 syntax = "proto3";
 
 option go_package = "github.com/cacos-group/cacos/apiV1";
+option (gogoproto.goproto_getters_all) = false;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
 
 package apiV1;
 
@@ -9,8 +17,16 @@ service Cacos {
   // Sends a greeting
   rpc SayHello (HelloRequest) returns (HelloReply) {}
   rpc AuthLogin (LoginRequest) returns (LoginReply) {}
-  rpc NamespaceList (NamespaceListReq) returns (NamespaceListReply) {}
-  rpc AppList (AppListReq) returns (AppListReply) {}
+  rpc NamespaceList (.google.protobuf.Empty) returns (NamespaceListReply) {
+    option (google.api.http) = {
+      get: "/v1/api/namespace/list"
+    };
+  }
+  rpc AppList (AppListReq) returns (AppListReply) {
+    option (google.api.http) = {
+      get: "/v1/api/app/list"
+    };
+  }
 }
 
 // The request message containing the user's name.

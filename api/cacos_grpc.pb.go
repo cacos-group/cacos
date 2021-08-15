@@ -7,6 +7,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -21,7 +22,7 @@ type CacosClient interface {
 	// Sends a greeting
 	SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
 	AuthLogin(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginReply, error)
-	NamespaceList(ctx context.Context, in *NamespaceListReq, opts ...grpc.CallOption) (*NamespaceListReply, error)
+	NamespaceList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*NamespaceListReply, error)
 	AppList(ctx context.Context, in *AppListReq, opts ...grpc.CallOption) (*AppListReply, error)
 }
 
@@ -51,7 +52,7 @@ func (c *cacosClient) AuthLogin(ctx context.Context, in *LoginRequest, opts ...g
 	return out, nil
 }
 
-func (c *cacosClient) NamespaceList(ctx context.Context, in *NamespaceListReq, opts ...grpc.CallOption) (*NamespaceListReply, error) {
+func (c *cacosClient) NamespaceList(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*NamespaceListReply, error) {
 	out := new(NamespaceListReply)
 	err := c.cc.Invoke(ctx, "/apiV1.Cacos/NamespaceList", in, out, opts...)
 	if err != nil {
@@ -76,7 +77,7 @@ type CacosServer interface {
 	// Sends a greeting
 	SayHello(context.Context, *HelloRequest) (*HelloReply, error)
 	AuthLogin(context.Context, *LoginRequest) (*LoginReply, error)
-	NamespaceList(context.Context, *NamespaceListReq) (*NamespaceListReply, error)
+	NamespaceList(context.Context, *emptypb.Empty) (*NamespaceListReply, error)
 	AppList(context.Context, *AppListReq) (*AppListReply, error)
 	mustEmbedUnimplementedCacosServer()
 }
@@ -91,7 +92,7 @@ func (UnimplementedCacosServer) SayHello(context.Context, *HelloRequest) (*Hello
 func (UnimplementedCacosServer) AuthLogin(context.Context, *LoginRequest) (*LoginReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AuthLogin not implemented")
 }
-func (UnimplementedCacosServer) NamespaceList(context.Context, *NamespaceListReq) (*NamespaceListReply, error) {
+func (UnimplementedCacosServer) NamespaceList(context.Context, *emptypb.Empty) (*NamespaceListReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NamespaceList not implemented")
 }
 func (UnimplementedCacosServer) AppList(context.Context, *AppListReq) (*AppListReply, error) {
@@ -147,7 +148,7 @@ func _Cacos_AuthLogin_Handler(srv interface{}, ctx context.Context, dec func(int
 }
 
 func _Cacos_NamespaceList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NamespaceListReq)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -159,7 +160,7 @@ func _Cacos_NamespaceList_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: "/apiV1.Cacos/NamespaceList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CacosServer).NamespaceList(ctx, req.(*NamespaceListReq))
+		return srv.(CacosServer).NamespaceList(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }

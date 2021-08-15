@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/cacos-group/cacos-server-sdk/entry"
 	api "github.com/cacos-group/cacos/api"
+	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/wire"
 	"time"
 )
@@ -25,8 +26,10 @@ func New(cacos entry.Cacos) (s *Service, cf func(), err error) {
 
 func newService(cacos entry.Cacos) (s *Service, cf func(), err error) {
 	return &Service{
-		cacos: cacos,
-	}, nil, nil
+			cacos: cacos,
+		}, func() {
+
+		}, nil
 }
 
 func (s *Service) SayHello(ctx context.Context, req *api.HelloRequest) (reply *api.HelloReply, err error) {
@@ -42,7 +45,7 @@ func (s *Service) AuthLogin(ctx context.Context, req *api.LoginRequest) (reply *
 	}, nil
 }
 
-func (s *Service) NamespaceList(ctx context.Context, in *api.NamespaceListReq) (out *api.NamespaceListReply, err error) {
+func (s *Service) NamespaceList(ctx context.Context, in *empty.Empty) (out *api.NamespaceListReply, err error) {
 	out = new(api.NamespaceListReply)
 
 	a, err := s.cacos.Administer(ctx)
