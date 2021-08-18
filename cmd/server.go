@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"github.com/cacos-group/cacos/internal/conf"
 	"github.com/cacos-group/cacos/internal/di"
+	"github.com/cacos-group/cacos/pkg/transport/http"
 	"github.com/cacos-group/cacos/pkg/zaplog"
 	"os"
 	"os/signal"
@@ -20,6 +22,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	http.NewServer().Start(context.Background())
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
