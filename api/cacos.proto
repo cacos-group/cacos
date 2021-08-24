@@ -4,9 +4,7 @@
 syntax = "proto3";
 
 option go_package = "github.com/cacos-group/cacos/apiV1";
-option (gogoproto.goproto_getters_all) = false;
 
-import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 
@@ -25,6 +23,21 @@ service Cacos {
   rpc AppList (AppListReq) returns (AppListReply) {
     option (google.api.http) = {
       get: "/v1/api/app/list"
+    };
+  }
+  rpc KvList (KVListReq) returns (KVListReply) {
+    option (google.api.http) = {
+      get: "/v1/api/kv/list"
+    };
+  }
+  rpc AddNamespace (AddNamespaceReq) returns (.google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/api/namespace/add"
+    };
+  }
+  rpc AddApp (AddAppReq) returns (.google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/api/app/add"
     };
   }
 }
@@ -56,7 +69,7 @@ message Namespace {
 }
 
 message NamespaceListReply {
-  repeated Namespace namespace_list= 1;
+  repeated Namespace namespaceList= 1 [json_name = "namespace_list"];
 }
 
 message App {
@@ -69,5 +82,30 @@ message AppListReq {
 }
 
 message AppListReply {
-  repeated App app_list= 1;
+  repeated App appList= 1 [json_name="app_list"];
+}
+
+message KVListReq {
+  string namespace = 1;
+  string app = 2;
+}
+
+message KV {
+  string namespace = 1;
+  string app = 2;
+  string key = 3;
+  string val = 4;
+}
+
+message KVListReply {
+  repeated KV kvList = 1[json_name="kv_list"];
+}
+
+message AddNamespaceReq {
+  string namespace = 1;
+}
+
+message AddAppReq {
+  string namespace = 1;
+  string app = 2;
 }

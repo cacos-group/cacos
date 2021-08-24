@@ -3,13 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
-	api "github.com/cacos-group/cacos/api"
+	api "github.com/cacos-group/cacos/api/gen/go"
 	"google.golang.org/grpc"
 	"time"
 )
 
 func main() {
-	cc, err := grpc.Dial("127.0.0.1:8888", grpc.WithInsecure())
+	cc, err := grpc.Dial("127.0.0.1:9090", grpc.WithInsecure())
 	if err != nil {
 		panic(err)
 	}

@@ -13,5 +13,7 @@
 # If this is not what you need, feel free to make your own scripts. Again, this
 # script is for demonstration purpose.
 #
-proto=$1
-protoc --go_out=.  --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative $proto
+#proto=$1
+#protoc --go_out=.  --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative $proto
+
+buf generate

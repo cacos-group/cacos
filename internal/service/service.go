@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"github.com/cacos-group/cacos-server-sdk/entry"
-	api "github.com/cacos-group/cacos/api"
+	api "github.com/cacos-group/cacos/api/gen/go"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/wire"
 	"time"
@@ -90,4 +90,58 @@ func (s *Service) AppList(ctx context.Context, in *api.AppListReq) (out *api.App
 	}
 
 	return out, nil
+}
+
+func (s *Service) KvList(ctx context.Context, in *api.KVListReq) (out *api.KVListReply, err error) {
+	out = new(api.KVListReply)
+
+	a, err := s.cacos.Administer(ctx)
+	if err != nil {
+		return
+	}
+
+	list, err := a.GetKVList(ctx, in.Namespace, in.App)
+	if err != nil {
+		return
+	}
+
+	out.KvList = make([]*api.KV, 0, len(list))
+	for _, item := range list {
+		out.KvList = append(out.KvList, &api.KV{
+			Namespace: item.Namespace,
+			App:       item.App,
+			Key:       item.Key,
+			Val:       item.Val,
+		})
+	}
+
+	return out, nil
+}
+
+func (s *Service) AddNamespace(ctx context.Context, in *api.AddNamespaceReq) (out *empty.Empty, err error) {
+	a, err := s.cacos.Administer(ctx)
+	if err != nil {
+		return
+	}
+
+	err = a.AddNamespace(ctx, in.Namespace)
+	if err != nil {
+		return
+	}
+
+	return nil, err
+}
+
+func (s *Service) AddApp(ctx context.Context, in *api.AddAppReq) (out *empty.Empty, err error) {
+	a, err := s.cacos.Administer(ctx)
+	if err != nil {
+		return
+	}
+
+	err = a.AddApp(ctx, in.Namespace, in.App)
+	if err != nil {
+		return
+	}
+
+	return &empty.Empty{}, nil
 }

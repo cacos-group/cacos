@@ -2,49 +2,28 @@ package grpc
 
 import (
 	"fmt"
-	"github.com/cacos-group/cacos/api"
 	"github.com/cacos-group/cacos/internal/conf"
-	"github.com/cacos-group/cacos/internal/service"
+	"github.com/cacos-group/cacos/pkg/transport/grpc"
 	"github.com/cacos-group/cacos/pkg/zaplog"
-	"google.golang.org/grpc"
-	"net"
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 )
 
-type Server interface {
-	Stop()
+func New(config *conf.Config, log zaplog.Logger) (s *grpc.Server, cf func(), err error) {
+	return newServer(config, log)
 }
 
-type server struct {
-	Server *grpc.Server
-}
-
-func New(config *conf.Config, svc *service.Service, g *grpc.Server, log zaplog.Logger) (s Server, cf func(), err error) {
-	return newServer(config, svc, g, log)
-}
-
-func newServer(config *conf.Config, svc *service.Service, g *grpc.Server, log zaplog.Logger) (s Server, cf func(), err error) {
-	serverConfig := config.Server
-	port := serverConfig.Port
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
-	if err != nil {
-		panic(fmt.Sprintf("failed to listen: %v", err))
-	}
-
-	apiV1.RegisterCacosServer(g, svc)
-	go func() {
-		err = g.Serve(lis)
-		if err != nil {
-			panic(err)
-		}
-	}()
+func newServer(config *conf.Config, log zaplog.Logger) (s *grpc.Server, cf func(), err error) {
+	s = grpc.NewServer(
+		grpc.WithAddress(fmt.Sprintf(":%d", config.Server.Port)),
+		grpc.WithLogger(log),
+		grpc.WithUnaryInterceptor(grpc_middleware.ChainUnaryServer(
+			grpc_recovery.UnaryServerInterceptor(),
+			grpc_ctxtags.UnaryServerInterceptor())))
 
 	cf = func() {
-		g.Stop()
+
 	}
-
-	return &server{Server: g}, cf, nil
-}
-
-func (s *server) Stop() {
-	s.Stop()
+	return
 }

@@ -1,13 +1,13 @@
 [server]
 name = ""
 version = ""
-port = 8888
+port = 9090
 timeout = "2s"
 
 [etcd]
 endpoints = ["127.0.0.1:2379"]
-username = "rw_namespace5"
-password = "p6jMjdoOEsJXhOBp"
+username = "root"
+password = "root"
 
 [mysql]
 dsn = "admin:admin@tcp(127.0.01:3306)/cacos?timeout=1s&readTimeout=1s&writeTimeout=1s&parseTime=true&charset=utf8mb4&loc=Local"
@@ -17,4 +17,4 @@ ConnMaxLifetime = "60s"
 ConnMaxIdleTime = "60s"
 
 [log]
-logName = "./logs/test2.log"
+logName = "./logs/cacos.log"

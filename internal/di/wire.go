@@ -6,7 +6,7 @@ package di
 import (
 	"github.com/cacos-group/cacos/internal/conf"
 	"github.com/cacos-group/cacos/internal/resource"
-	grpc2 "github.com/cacos-group/cacos/internal/server/grpc"
+	"github.com/cacos-group/cacos/internal/server/grpc"
 	"github.com/cacos-group/cacos/internal/service"
 	"github.com/google/wire"
 )
@@ -14,5 +14,5 @@ import (
 //bash ~/go/bin/wire
 func InitApp(config *conf.Config) (*App, func(), error) {
 
-	panic(wire.Build(NewApp, service.Provider, resource.NewGRPCServer, resource.NewCacos, grpc2.New, resource.NewLog))
+	panic(wire.Build(NewApp, service.Provider, resource.NewCacos, grpc.New, resource.NewLog))
 }
