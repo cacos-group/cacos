@@ -27,6 +27,7 @@ type CacosClient interface {
 	KvList(ctx context.Context, in *KVListReq, opts ...grpc.CallOption) (*KVListReply, error)
 	AddNamespace(ctx context.Context, in *AddNamespaceReq, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	AddApp(ctx context.Context, in *AddAppReq, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	AddKV(ctx context.Context, in *AddKVReq, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type cacosClient struct {
@@ -100,6 +101,15 @@ func (c *cacosClient) AddApp(ctx context.Context, in *AddAppReq, opts ...grpc.Ca
 	return out, nil
 }
 
+func (c *cacosClient) AddKV(ctx context.Context, in *AddKVReq, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/apiV1.Cacos/AddKV", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CacosServer is the server API for Cacos service.
 // All implementations must embed UnimplementedCacosServer
 // for forward compatibility
@@ -112,6 +122,7 @@ type CacosServer interface {
 	KvList(context.Context, *KVListReq) (*KVListReply, error)
 	AddNamespace(context.Context, *AddNamespaceReq) (*emptypb.Empty, error)
 	AddApp(context.Context, *AddAppReq) (*emptypb.Empty, error)
+	AddKV(context.Context, *AddKVReq) (*emptypb.Empty, error)
 	mustEmbedUnimplementedCacosServer()
 }
 
@@ -139,6 +150,9 @@ func (UnimplementedCacosServer) AddNamespace(context.Context, *AddNamespaceReq) 
 }
 func (UnimplementedCacosServer) AddApp(context.Context, *AddAppReq) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddApp not implemented")
+}
+func (UnimplementedCacosServer) AddKV(context.Context, *AddKVReq) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddKV not implemented")
 }
 func (UnimplementedCacosServer) mustEmbedUnimplementedCacosServer() {}
 
@@ -279,6 +293,24 @@ func _Cacos_AddApp_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Cacos_AddKV_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddKVReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CacosServer).AddKV(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/apiV1.Cacos/AddKV",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CacosServer).AddKV(ctx, req.(*AddKVReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Cacos_ServiceDesc is the grpc.ServiceDesc for Cacos service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -313,6 +345,10 @@ var Cacos_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AddApp",
 			Handler:    _Cacos_AddApp_Handler,
+		},
+		{
+			MethodName: "AddKV",
+			Handler:    _Cacos_AddKV_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

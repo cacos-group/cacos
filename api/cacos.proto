@@ -40,6 +40,11 @@ service Cacos {
       post: "/v1/api/app/add"
     };
   }
+  rpc AddKV (AddKVReq) returns (.google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/api/kv/add"
+    };
+  }
 }
 
 // The request message containing the user's name.
@@ -108,4 +113,11 @@ message AddNamespaceReq {
 message AddAppReq {
   string namespace = 1;
   string app = 2;
+}
+
+message AddKVReq {
+  string namespace = 1;
+  string app = 2;
+  string key = 3;
+  string val = 4;
 }

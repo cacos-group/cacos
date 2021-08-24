@@ -9,10 +9,9 @@ import (
 	"github.com/cacos-group/cacos/internal/service"
 	"github.com/cacos-group/cacos/pkg/transport/grpc"
 	zaplog "github.com/cacos-group/cacos/pkg/zaplog"
-	"net/http"
-
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	xgrpc "google.golang.org/grpc"
+	"net/http"
 )
 
 type App struct {
@@ -72,5 +71,12 @@ func (app *App) startGrpcGateway(config *conf.Config) error {
 	}
 
 	// Start HTTP server (and proxy calls to gRPC server endpoint)
-	return http.ListenAndServe(":8081", mux)
+	return http.ListenAndServe(":8081", Middleware(mux))
+}
+
+func Middleware(h http.Handler) http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Println(request.URL)
+		h.ServeHTTP(writer, request)
+	}
 }

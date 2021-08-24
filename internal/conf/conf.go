@@ -20,6 +20,7 @@ type Config struct {
 	Mysql  mysql
 	Server server
 	Log    log
+	App    app
 }
 
 type server struct {
@@ -37,6 +38,11 @@ type etcd struct {
 	Endpoints []string
 	Username  string
 	Password  string
+}
+
+type app struct {
+	AuthExcepts []string
+	Key         string
 }
 
 type mysql struct {

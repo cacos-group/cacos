@@ -145,3 +145,17 @@ func (s *Service) AddApp(ctx context.Context, in *api.AddAppReq) (out *empty.Emp
 
 	return &empty.Empty{}, nil
 }
+
+func (s *Service) AddKV(ctx context.Context, in *api.AddKVReq) (out *empty.Empty, err error) {
+	a, err := s.cacos.Administer(ctx)
+	if err != nil {
+		return
+	}
+
+	err = a.AddKV(ctx, in.Namespace, in.App, in.Key, in.Val)
+	if err != nil {
+		return
+	}
+
+	return &empty.Empty{}, nil
+}

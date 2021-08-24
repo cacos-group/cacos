@@ -1,3 +1,7 @@
+[app]
+authExcepts = ["/v1/api/app/add"]
+key = ""
+
 [server]
 name = ""
 version = ""
