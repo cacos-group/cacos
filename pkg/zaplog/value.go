@@ -2,6 +2,7 @@ package zaplog
 
 import (
 	"context"
+	"go.uber.org/zap"
 	"runtime"
 	"strconv"
 	"strings"
@@ -13,9 +14,6 @@ import (
 var (
 	// DefaultCaller is a Valuer that returns the file and line.
 	DefaultCaller = Caller(3)
-
-	// DefaultTimestamp is a Valuer that returns the current wallclock time.
-	DefaultTimestamp = Timestamp(time.RFC3339)
 )
 
 // Valuer is returns a zaplog value.
@@ -37,7 +35,7 @@ func Caller(depth int) Valuer {
 			depth++
 			_, file, line, _ = runtime.Caller(depth)
 		}
-		if strings.LastIndex(file, "/zaplog/helper.go") > 0 {
+		if strings.LastIndex(file, "/zaplog/log.go") > 0 {
 			depth++
 			_, file, line, _ = runtime.Caller(depth)
 		}
@@ -73,12 +71,15 @@ func SpanID() Valuer {
 	}
 }
 
-func bindValues(ctx context.Context, keyvals []interface{}) {
+func bindValues(ctx context.Context, keyvals []interface{}) (fields []zap.Field) {
+	fields = make([]zap.Field, 0, len(keyvals)/2)
+
 	for i := 1; i < len(keyvals); i += 2 {
 		if v, ok := keyvals[i].(Valuer); ok {
-			keyvals[i] = v(ctx)
+			fields = append(fields, Any(keyvals[i-1].(string), v(ctx)))
 		}
 	}
+	return fields
 }
 
 func containsValuer(keyvals []interface{}) bool {

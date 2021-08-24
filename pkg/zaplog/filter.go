@@ -1,6 +1,8 @@
 package zaplog
 
-import "go.uber.org/zap"
+import (
+	"go.uber.org/zap"
+)
 
 // FilterOption is filter option.
 type FilterOption func(*Filter)
@@ -32,45 +34,21 @@ func FilterValue(value ...string) FilterOption {
 
 // Filter is a logger filter.
 type Filter struct {
-	logger Logger
-	level  Level
-	key    map[interface{}]struct{}
-	value  map[interface{}]struct{}
+	level Level
+	key   map[interface{}]struct{}
+	value map[interface{}]struct{}
 }
 
 // NewFilter new a logger filter.
-func NewFilter(logger Logger, opts ...FilterOption) *Filter {
+func NewFilter(opts ...FilterOption) *Filter {
 	options := Filter{
-		logger: logger,
-		key:    make(map[interface{}]struct{}),
-		value:  make(map[interface{}]struct{}),
+		key:   make(map[interface{}]struct{}),
+		value: make(map[interface{}]struct{}),
 	}
 	for _, o := range opts {
 		o(&options)
 	}
 	return &options
-}
-
-func (f *Filter) Debug(msg string, fields ...zap.Field) {
-	f.logger.Debug(msg, fields...)
-}
-func (f *Filter) Info(msg string, fields ...zap.Field) {
-	f.logger.Info(msg, fields...)
-}
-func (f *Filter) Warn(msg string, fields ...zap.Field) {
-	f.logger.Warn(msg, fields...)
-}
-func (f *Filter) Error(msg string, fields ...zap.Field) {
-	f.logger.Error(msg, fields...)
-}
-func (f *Filter) DPanic(msg string, fields ...zap.Field) {
-	f.logger.DPanic(msg, fields...)
-}
-func (f *Filter) Panic(msg string, fields ...zap.Field) {
-	f.logger.Panic(msg, fields...)
-}
-func (f *Filter) Fatal(msg string, fields ...zap.Field) {
-	f.logger.Fatal(msg, fields...)
 }
 
 func (f *Filter) formatFields(fields ...zap.Field) {

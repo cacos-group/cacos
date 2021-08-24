@@ -8,26 +8,6 @@ import (
 	"os"
 )
 
-var (
-	// DefaultLogger is default logger.
-	DefaultLogger Logger = New(Config{})
-)
-
-func Any(key string, value interface{}) zap.Field {
-	return zap.Any(key, value)
-}
-
-// Logger is a logger interface.
-type Logger interface {
-	Debug(msg string, fields ...zap.Field)
-	Info(msg string, fields ...zap.Field)
-	Warn(msg string, fields ...zap.Field)
-	Error(msg string, fields ...zap.Field)
-	DPanic(msg string, fields ...zap.Field)
-	Panic(msg string, fields ...zap.Field)
-	Fatal(msg string, fields ...zap.Field)
-}
-
 type Config struct {
 	Level        string
 	LogName      string
@@ -40,21 +20,26 @@ type Config struct {
 	FilterValues []string
 }
 
-func New(cfg Config) Logger {
-	return newLogger(cfg)
+type logger struct {
+	log    *zap.Logger
+	filter *Filter
+
+	prefixMap map[string]interface{}
+	prefix    []interface{}
+	hasValuer bool
+	ctx       context.Context
 }
 
 func newLogger(cfg Config) (l *logger) {
-	l = new(logger)
 	var ws []zapcore.WriteSyncer
 	if cfg.LogName != "" {
-		ws = append(ws, zapcore.AddSync(zapcore.AddSync(&lumberjack.Logger{
+		ws = append(ws, zapcore.AddSync(&lumberjack.Logger{
 			Filename:   cfg.LogName,
 			MaxSize:    cfg.MaxSize,    //MaxSize：在进行切割之前，日志文件的最大大小（以MB为单位）
 			MaxBackups: cfg.MaxBackups, //MaxBackups：保留旧文件的最大个数
 			MaxAge:     cfg.MaxAge,     //MaxAges：保留旧文件的最大天数
 			Compress:   cfg.Compress,   //Compress：是否压缩/归档旧文件
-		})))
+		}))
 	}
 
 	if cfg.Stdout || len(ws) == 0 {
@@ -73,7 +58,7 @@ func newLogger(cfg Config) (l *logger) {
 				StacktraceKey:  "stacktrace",
 				LineEnding:     zapcore.DefaultLineEnding,
 				EncodeLevel:    zapcore.CapitalLevelEncoder,
-				EncodeTime:     zapcore.ISO8601TimeEncoder,
+				EncodeTime:     zapcore.RFC3339NanoTimeEncoder,
 				EncodeDuration: zapcore.SecondsDurationEncoder,
 				EncodeCaller:   zapcore.ShortCallerEncoder,
 			}),
@@ -85,59 +70,98 @@ func newLogger(cfg Config) (l *logger) {
 		filterValues []string
 	)
 
-	filterLog := NewFilter(zapLogger,
+	filter := NewFilter(
 		FilterLevel(LevelDebug),
 		FilterKey(filterKeys...),
 		FilterValue(filterValues...),
 	)
 
-	l.log = filterLog
+	l = &logger{
+		log:    zapLogger,
+		filter: filter,
+	}
 	l.with(
+		"app_id", "asdas",
 		"trace_id", TraceID(),
 		"span_id", SpanID(),
 		"caller", DefaultCaller)
+
 	return
 }
 
-type logger struct {
-	log       Logger
-	prefixMap map[string]interface{}
-	prefix    []interface{}
-	hasValuer bool
-	ctx       context.Context
-}
-
 func (l *logger) Debug(msg string, fields ...zap.Field) {
-	l.log.Debug(msg, l.bindValues(l.ctx, fields...)...)
+	ctx := l.ctx
+	fields = append(bindValues(ctx, l.prefix), fields...)
+	l.filter.formatFields(fields...)
+
+	l.log.Debug(msg, fields...)
 }
 func (l *logger) Info(msg string, fields ...zap.Field) {
-	l.log.Info(msg, l.bindValues(l.ctx, fields...)...)
+	ctx := l.ctx
+	fields = append(bindValues(ctx, l.prefix), fields...)
+	l.log.Info(msg, fields...)
 }
 func (l *logger) Warn(msg string, fields ...zap.Field) {
-	l.log.Warn(msg, l.bindValues(l.ctx, fields...)...)
+	ctx := l.ctx
+	fields = append(bindValues(ctx, l.prefix), fields...)
+	l.log.Warn(msg, fields...)
 }
 func (l *logger) Error(msg string, fields ...zap.Field) {
-	l.log.Error(msg, l.bindValues(l.ctx, fields...)...)
+	ctx := l.ctx
+	fields = append(bindValues(ctx, l.prefix), fields...)
+	l.log.Error(msg, fields...)
 }
 func (l *logger) DPanic(msg string, fields ...zap.Field) {
-	l.log.DPanic(msg, l.bindValues(l.ctx, fields...)...)
+	ctx := l.ctx
+	fields = append(bindValues(ctx, l.prefix), fields...)
+	l.log.DPanic(msg, fields...)
 }
 func (l *logger) Panic(msg string, fields ...zap.Field) {
-	l.log.Panic(msg, l.bindValues(l.ctx, fields...)...)
+	ctx := l.ctx
+	fields = append(bindValues(ctx, l.prefix), fields...)
+	l.log.Panic(msg, fields...)
 }
 func (l *logger) Fatal(msg string, fields ...zap.Field) {
-	l.log.Fatal(msg, l.bindValues(l.ctx, fields...)...)
+	ctx := l.ctx
+	fields = append(bindValues(ctx, l.prefix), fields...)
+	l.log.Fatal(msg, fields...)
 }
 
-func (l *logger) bindValues(ctx context.Context, fields ...zap.Field) []zap.Field {
-	keyvals := l.prefix
-	for i := 1; i < len(keyvals); i += 2 {
-		if v, ok := keyvals[i].(Valuer); ok {
-			fields = append(fields, Any(keyvals[i-1].(string), v(ctx)))
-		}
-	}
+func (l *logger) Debugc(ctx context.Context, msg string, fields ...zap.Field) {
+	fields = append(bindValues(ctx, l.prefix), fields...)
+	l.filter.formatFields(fields...)
 
-	return fields
+	l.log.Debug(msg, fields...)
+}
+
+func (l *logger) Infoc(ctx context.Context, msg string, fields ...zap.Field) {
+	fields = append(bindValues(ctx, l.prefix), fields...)
+	l.log.Info(msg, fields...)
+}
+
+func (l *logger) Warnc(ctx context.Context, msg string, fields ...zap.Field) {
+	fields = append(bindValues(ctx, l.prefix), fields...)
+	l.log.Warn(msg, fields...)
+}
+
+func (l *logger) Errorc(ctx context.Context, msg string, fields ...zap.Field) {
+	fields = append(bindValues(ctx, l.prefix), fields...)
+	l.log.Error(msg, fields...)
+}
+
+func (l *logger) DPanicc(ctx context.Context, msg string, fields ...zap.Field) {
+	fields = append(bindValues(ctx, l.prefix), fields...)
+	l.log.DPanic(msg, fields...)
+}
+
+func (l *logger) Panicc(ctx context.Context, msg string, fields ...zap.Field) {
+	fields = append(bindValues(ctx, l.prefix), fields...)
+	l.log.Panic(msg, fields...)
+}
+
+func (l *logger) Fatalc(ctx context.Context, msg string, fields ...zap.Field) {
+	fields = append(bindValues(ctx, l.prefix), fields...)
+	l.log.Fatal(msg, fields...)
 }
 
 // with with logger fields.
