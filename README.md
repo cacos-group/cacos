@@ -9,7 +9,11 @@ Cacos是配置管理中心，使用etcd、mysql存储，go语言开发。
 
 ### 架构图
 
+![jiatou](https://github.com/cacos-group/cacos/blob/main/doc/jiagou.jpg)
+
 ### 数据模型
+
+![shujumoxing](https://github.com/cacos-group/cacos/blob/main/doc/shujumoxing.jpg)
 
 ### 功能和需求列表
 
