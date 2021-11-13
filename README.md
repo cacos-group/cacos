@@ -15,18 +15,12 @@ Cacos是配置管理中心，使用etcd、mysql存储，go语言开发。
 
 ![shujumoxing](https://github.com/cacos-group/cacos/blob/main/doc/shujumoxing.jpg)
 
-### 功能和需求列表
+### 数据一致性
 
-```mermaid
-graph LR
-Katex -> A(asd)
+![eventSourcing](https://github.com/cacos-group/cacos/blob/main/doc/eventsourcing.png)
 
-```
+## 业务逻辑
+![yewulouji](https://github.com/cacos-group/cacos/blob/main/doc/f.png)
 
-描述|状态
----|---
-添加namespace|支持
-添加appid|未支持
-添加kv|支持
-
-
+## 设计方案
+![tech](https://github.com/cacos-group/cacos/blob/main/doc/tech.png)
