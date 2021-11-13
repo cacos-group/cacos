@@ -21,7 +21,7 @@ Cacos是配置管理中心，使用etcd、mysql存储，go语言开发。
 
 ### 数据一致性
 
-![eventSourcing](https://pic.rmb.bdstatic.com/bjh/news/3a46c36a62372aedd8f044741df4e0f4.png@wm_2,t_55m+5a625Y+3L2FscGhh,fc_ffffff,ff_U2ltSGVp,sz_28,x_18,y_18)
+![eventSourcing](https://f11.baidu.com/it/u=2183350210,158022252&fm=30&app=106&f=JPEG&access=215967316?w=640&h=180&s=18A05D30857644225ECD65DE000080B2)
 
 ## 业务逻辑
 ![yewulouji](https://pic.rmb.bdstatic.com/bjh/news/3a46c36a62372aedd8f044741df4e0f4.png@wm_2,t_55m+5a625Y+3L2FscGhh,fc_ffffff,ff_U2ltSGVp,sz_28,x_18,y_18)
