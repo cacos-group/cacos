@@ -35,6 +35,7 @@ func NewApp(config *conf.Config, svc *service.Service, g *grpc.Server, log zaplo
 		if err != nil {
 			panic(err)
 		}
+		log.Info("http server start")
 	}()
 
 	go func() {
@@ -42,6 +43,7 @@ func NewApp(config *conf.Config, svc *service.Service, g *grpc.Server, log zaplo
 		if err != nil {
 			panic(err)
 		}
+		log.Info("grpc gatewaty server start")
 	}()
 
 	closeFunc = func() {
@@ -71,7 +73,7 @@ func (app *App) startGrpcGateway(config *conf.Config) error {
 	}
 
 	// Start HTTP server (and proxy calls to gRPC server endpoint)
-	return http.ListenAndServe(":8081", Middleware(mux))
+	return http.ListenAndServe(fmt.Sprintf(":%d", config.Http.Port), Middleware(mux))
 }
 
 func Middleware(h http.Handler) http.HandlerFunc {

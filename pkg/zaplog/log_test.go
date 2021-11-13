@@ -12,7 +12,7 @@ func TestInfo(t *testing.T) {
 
 func BenchmarkLogger_Debug(b *testing.B) {
 	logger := New(Config{
-		LogName: "./logs/bench.log",
+		LogName: "./logs/bench.logger",
 	})
 	b.ResetTimer()
 

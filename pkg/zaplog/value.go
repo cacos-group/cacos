@@ -35,7 +35,7 @@ func Caller(depth int) Valuer {
 			depth++
 			_, file, line, _ = runtime.Caller(depth)
 		}
-		if strings.LastIndex(file, "/zaplog/log.go") > 0 {
+		if strings.LastIndex(file, "/zaplog/logger.go") > 0 {
 			depth++
 			_, file, line, _ = runtime.Caller(depth)
 		}

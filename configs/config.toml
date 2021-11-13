@@ -2,6 +2,9 @@
 authExcepts = ["/v1/api/app/add"]
 key = ""
 
+[http]
+port = 8081
+
 [server]
 name = ""
 version = ""
@@ -11,7 +14,7 @@ timeout = "2s"
 [etcd]
 endpoints = ["127.0.0.1:2379"]
 username = "root"
-password = "root"
+password = ""
 
 [mysql]
 dsn = "admin:admin@tcp(127.0.01:3306)/cacos?timeout=1s&readTimeout=1s&writeTimeout=1s&parseTime=true&charset=utf8mb4&loc=Local"

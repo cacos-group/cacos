@@ -1,4 +1,4 @@
-package resource
+package logger
 
 import (
 	"github.com/cacos-group/cacos/internal/conf"

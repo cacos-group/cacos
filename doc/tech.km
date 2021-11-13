@@ -1,0 +1,267 @@
+{
+    "root": {
+        "data": {
+            "id": "cfokuaat93k0",
+            "created": 1636799057212,
+            "text": "设计方案"
+        },
+        "children": [
+            {
+                "data": {
+                    "id": "cfokujz9ahk0",
+                    "created": 1636799078282,
+                    "text": "mysql"
+                },
+                "children": [
+                    {
+                        "data": {
+                            "id": "cfokuso1kbs0",
+                            "created": 1636799097194,
+                            "text": "存储事件日志"
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cfol2sdhxg00",
+                                    "created": 1636799723470,
+                                    "text": "表:event_log_{namespace}_{编号}"
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cfol3tk6rxs0",
+                                            "created": 1636799804416,
+                                            "text": "event_type：事件类型"
+                                        },
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cfol58xje2g0",
+                                                    "created": 1636799916239,
+                                                    "text": "AppidPut"
+                                                },
+                                                "children": []
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "cfol5qnxtww0",
+                                                    "created": 1636799954840,
+                                                    "text": "KVPut"
+                                                },
+                                                "children": []
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "cfol6cree280",
+                                                    "created": 1636800002939,
+                                                    "text": "UserAdd"
+                                                },
+                                                "children": []
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "cfol6ipoie80",
+                                                    "created": 1636800015896,
+                                                    "text": "RoleAdd"
+                                                },
+                                                "children": []
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "cfol6nuhnig0",
+                                                    "created": 1636800027070,
+                                                    "text": "UserGrantRole"
+                                                },
+                                                "children": []
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "cfol6syfbaw0",
+                                                    "created": 1636800038192,
+                                                    "text": "RoleGrantPermission"
+                                                },
+                                                "children": []
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cfol4g0i6140",
+                                            "created": 1636799853291,
+                                            "text": "args：参数"
+                                        },
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cfol5kpv3k80",
+                                                    "created": 1636799941896,
+                                                    "text": "foo=1&bar=2"
+                                                },
+                                                "children": []
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "data": {
+                            "id": "cfokuwl7iao0",
+                            "created": 1636799105730,
+                            "text": "存储namespace和appid信息"
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cfokx2fdkh40",
+                                    "created": 1636799275167,
+                                    "text": "表:infos "
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cfol42l9j4o0",
+                                            "created": 1636799824072,
+                                            "text": "namespace"
+                                        },
+                                        "children": []
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cfol44eon9k0",
+                                            "created": 1636799828027,
+                                            "text": "appid"
+                                        },
+                                        "children": []
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cfol4a161k00",
+                                            "created": 1636799840271,
+                                            "text": "level"
+                                        },
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cfol7qeb5c00",
+                                                    "created": 1636800110986,
+                                                    "text": "1：namespace"
+                                                },
+                                                "children": []
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "cfol7svuweg0",
+                                                    "created": 1636800116401,
+                                                    "text": "2：appid"
+                                                },
+                                                "children": []
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "data": {
+                    "id": "cfokukkf79c0",
+                    "created": 1636799079561,
+                    "text": "etcd"
+                },
+                "children": [
+                    {
+                        "data": {
+                            "id": "cfokvrw44bc0",
+                            "created": 1636799173870,
+                            "text": "kv存储和查询"
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cfol8m89xog0",
+                                    "created": 1636800180279,
+                                    "text": "key"
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cfol8w9z14o0",
+                                            "created": 1636800202149,
+                                            "text": "/{namespace}/{appid}/{name}"
+                                        },
+                                        "children": []
+                                    }
+                                ]
+                            },
+                            {
+                                "data": {
+                                    "id": "cfol8tra4aw0",
+                                    "created": 1636800196665,
+                                    "text": "value"
+                                },
+                                "children": []
+                            }
+                        ]
+                    },
+                    {
+                        "data": {
+                            "id": "cfokvvg5kmo0",
+                            "created": 1636799181612,
+                            "text": "权限隔离"
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cfol9gtdefs0",
+                                    "created": 1636800246858,
+                                    "text": "/{namespace}/{appid}隔离级别"
+                                },
+                                "children": []
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "data": {
+                    "id": "cfokul5fecw0",
+                    "created": 1636799080832,
+                    "text": "golang"
+                },
+                "children": [
+                    {
+                        "data": {
+                            "id": "cfolabfjg600",
+                            "created": 1636800313502,
+                            "text": "grpc"
+                        },
+                        "children": []
+                    },
+                    {
+                        "data": {
+                            "id": "cfolaef1ttc0",
+                            "created": 1636800320002,
+                            "text": "grpc-gateway"
+                        },
+                        "children": []
+                    },
+                    {
+                        "data": {
+                            "id": "cfolavpche00",
+                            "created": 1636800357630,
+                            "text": "zap"
+                        },
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    },
+    "template": "right",
+    "theme": "fresh-blue",
+    "version": "1.4.43"
+}

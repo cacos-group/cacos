@@ -2,8 +2,9 @@ package service
 
 import (
 	"context"
-	"github.com/cacos-group/cacos-server-sdk/entry"
 	api "github.com/cacos-group/cacos/api/gen/go"
+	"github.com/cacos-group/cacos/internal/core/event/sourcing"
+	"github.com/cacos-group/cacos/internal/core/query"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/wire"
 	"time"
@@ -16,17 +17,19 @@ var Provider = wire.NewSet(New, wire.Bind(new(api.CacosServer), new(*Service)))
 // Service service.
 type Service struct {
 	api.UnimplementedCacosServer
-	cacos entry.Cacos
+	query         query.Client
+	eventSourcing sourcing.Client
 }
 
 // New new a service and return.
-func New(cacos entry.Cacos) (s *Service, cf func(), err error) {
-	return newService(cacos)
+func New(query query.Client, eventSourcing sourcing.Client) (s *Service, cf func(), err error) {
+	return newService(query, eventSourcing)
 }
 
-func newService(cacos entry.Cacos) (s *Service, cf func(), err error) {
+func newService(query query.Client, eventSourcing sourcing.Client) (s *Service, cf func(), err error) {
 	return &Service{
-			cacos: cacos,
+			query:         query,
+			eventSourcing: eventSourcing,
 		}, func() {
 
 		}, nil
@@ -48,18 +51,13 @@ func (s *Service) AuthLogin(ctx context.Context, req *api.LoginRequest) (reply *
 func (s *Service) NamespaceList(ctx context.Context, in *empty.Empty) (out *api.NamespaceListReply, err error) {
 	out = new(api.NamespaceListReply)
 
-	a, err := s.cacos.Administer(ctx)
+	list, err := s.query.GetNamespaceList(ctx)
 	if err != nil {
 		return
 	}
 
-	namespaceList, err := a.GetNamespaceList(ctx)
-	if err != nil {
-		return
-	}
-
-	out.NamespaceList = make([]*api.Namespace, 0, len(namespaceList))
-	for _, item := range namespaceList {
+	out.NamespaceList = make([]*api.Namespace, 0, len(list))
+	for _, item := range list {
 		out.NamespaceList = append(out.NamespaceList, &api.Namespace{
 			Namespace: item.Namespace,
 		})
@@ -71,12 +69,7 @@ func (s *Service) NamespaceList(ctx context.Context, in *empty.Empty) (out *api.
 func (s *Service) AppList(ctx context.Context, in *api.AppListReq) (out *api.AppListReply, err error) {
 	out = new(api.AppListReply)
 
-	a, err := s.cacos.Administer(ctx)
-	if err != nil {
-		return
-	}
-
-	appList, err := a.GetAppList(ctx, in.Namespace)
+	appList, err := s.query.GetAppidList(ctx, in.Namespace)
 	if err != nil {
 		return
 	}
@@ -84,8 +77,7 @@ func (s *Service) AppList(ctx context.Context, in *api.AppListReq) (out *api.App
 	out.AppList = make([]*api.App, 0, len(appList))
 	for _, item := range appList {
 		out.AppList = append(out.AppList, &api.App{
-			Namespace: item.Namespace,
-			App:       item.App,
+			App: item.Appid,
 		})
 	}
 
@@ -95,23 +87,18 @@ func (s *Service) AppList(ctx context.Context, in *api.AppListReq) (out *api.App
 func (s *Service) KvList(ctx context.Context, in *api.KVListReq) (out *api.KVListReply, err error) {
 	out = new(api.KVListReply)
 
-	a, err := s.cacos.Administer(ctx)
+	list, err := s.query.GetKVList(ctx, in.Namespace, in.App)
 	if err != nil {
 		return
 	}
 
-	list, err := a.GetKVList(ctx, in.Namespace, in.App)
-	if err != nil {
-		return
-	}
-
-	out.KvList = make([]*api.KV, 0, len(list))
-	for _, item := range list {
+	out.KvList = make([]*api.KV, 0, len(list.Kvs))
+	for _, item := range list.Kvs {
 		out.KvList = append(out.KvList, &api.KV{
-			Namespace: item.Namespace,
-			App:       item.App,
-			Key:       item.Key,
-			Val:       item.Val,
+			Namespace: in.Namespace,
+			App:       in.App,
+			Key:       string(item.Key),
+			Val:       string(item.Value),
 		})
 	}
 
@@ -119,12 +106,8 @@ func (s *Service) KvList(ctx context.Context, in *api.KVListReq) (out *api.KVLis
 }
 
 func (s *Service) AddNamespace(ctx context.Context, in *api.AddNamespaceReq) (out *empty.Empty, err error) {
-	a, err := s.cacos.Administer(ctx)
-	if err != nil {
-		return
-	}
 
-	err = a.AddNamespace(ctx, in.Namespace)
+	err = s.eventSourcing.AddNamespace(ctx, in.Namespace)
 	if err != nil {
 		return
 	}
@@ -133,12 +116,7 @@ func (s *Service) AddNamespace(ctx context.Context, in *api.AddNamespaceReq) (ou
 }
 
 func (s *Service) AddApp(ctx context.Context, in *api.AddAppReq) (out *empty.Empty, err error) {
-	a, err := s.cacos.Administer(ctx)
-	if err != nil {
-		return
-	}
-
-	err = a.AddApp(ctx, in.Namespace, in.App)
+	err = s.eventSourcing.AddAppid(ctx, in.Namespace, in.App)
 	if err != nil {
 		return
 	}
@@ -147,12 +125,7 @@ func (s *Service) AddApp(ctx context.Context, in *api.AddAppReq) (out *empty.Emp
 }
 
 func (s *Service) AddKV(ctx context.Context, in *api.AddKVReq) (out *empty.Empty, err error) {
-	a, err := s.cacos.Administer(ctx)
-	if err != nil {
-		return
-	}
-
-	err = a.AddKV(ctx, in.Namespace, in.App, in.Key, in.Val)
+	err = s.eventSourcing.AddKV(ctx, in.Namespace, in.App, in.Key, in.Val)
 	if err != nil {
 		return
 	}

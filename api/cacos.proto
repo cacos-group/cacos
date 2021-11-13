@@ -20,9 +20,9 @@ service Cacos {
       get: "/v1/api/namespace/list"
     };
   }
-  rpc AppList (AppListReq) returns (AppListReply) {
+  rpc AppidList (AppidListReq) returns (AppidListReply) {
     option (google.api.http) = {
-      get: "/v1/api/app/list"
+      get: "/v1/api/appid/list"
     };
   }
   rpc KvList (KVListReq) returns (KVListReply) {
@@ -35,9 +35,9 @@ service Cacos {
       post: "/v1/api/namespace/add"
     };
   }
-  rpc AddApp (AddAppReq) returns (.google.protobuf.Empty) {
+  rpc AddAppid (AddAppidReq) returns (.google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/v1/api/app/add"
+      post: "/v1/api/appid/add"
     };
   }
   rpc AddKV (AddKVReq) returns (.google.protobuf.Empty) {
@@ -79,27 +79,25 @@ message NamespaceListReply {
 
 message App {
   string namespace = 1;
-  string app = 2;
+  string appid = 2;
 }
 
-message AppListReq {
+message AppidListReq {
   string namespace = 1;
 }
 
-message AppListReply {
-  repeated App appList= 1 [json_name="app_list"];
+message AppidListReply {
+  repeated App appidList= 1 [json_name="appid_list"];
 }
 
 message KVListReq {
   string namespace = 1;
-  string app = 2;
+  string appid = 2;
 }
 
 message KV {
-  string namespace = 1;
-  string app = 2;
-  string key = 3;
-  string val = 4;
+  string key = 1;
+  string val = 2;
 }
 
 message KVListReply {
@@ -110,14 +108,14 @@ message AddNamespaceReq {
   string namespace = 1;
 }
 
-message AddAppReq {
+message AddAppidReq {
   string namespace = 1;
-  string app = 2;
+  string appid = 2;
 }
 
 message AddKVReq {
   string namespace = 1;
-  string app = 2;
+  string appid = 2;
   string key = 3;
   string val = 4;
 }
