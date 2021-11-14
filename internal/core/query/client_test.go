@@ -3,8 +3,8 @@ package query
 import (
 	"context"
 	"fmt"
-	"github.com/cacos-group/cacos/internal/core/conf"
-	"github.com/cacos-group/cacos/internal/core/resource"
+	"github.com/cacos-group/cacos/internal/conf"
+	"github.com/cacos-group/cacos/internal/resource"
 	"testing"
 	"time"
 )
@@ -14,8 +14,8 @@ func testClient(t *testing.T) Client {
 
 	cfg.Mysql = conf.MysqlConfig{
 		DSN:             "admin:admin@tcp(127.0.0.1:3306)/cacos",
-		ConnMaxLifetime: 60 * time.Second,
-		ConnMaxIdleTime: 6 * time.Hour,
+		ConnMaxLifetime: conf.Duration(60 * time.Second),
+		ConnMaxIdleTime: conf.Duration(6 * time.Hour),
 	}
 
 	db, _, err := resource.NewDB(cfg)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	model2 "github.com/cacos-group/cacos/internal/core/event/sourcing/model"
 	"github.com/cacos-group/cacos/internal/core/query/model"
 	clientV3 "go.etcd.io/etcd/client/v3"
 )
@@ -29,54 +30,36 @@ func NewClient(db *sql.DB, etcd *clientV3.Client) Client {
 }
 
 func (c *client) GetNamespaceList(ctx context.Context) (list []model.NamespaceModel, err error) {
-	conn, err := c.db.Conn(ctx)
+	prefix := model2.GenNamespacePrefix()
+	var opts []clientV3.OpOption
+	opts = append(opts, clientV3.WithPrefix())
+
+	rsp, err := c.etcd.Get(ctx, prefix, opts...)
 	if err != nil {
 		return
 	}
-	defer conn.Close()
 
-	rows, err := conn.QueryContext(ctx, "SELECT `namespace` FROM `infos` WHERE `level` = ?", 1)
-	if err != nil {
-		return
-	}
-	defer rows.Close()
-
-	list = make([]model.NamespaceModel, 0, 20)
-	for rows.Next() {
-		var namespace string
-		err := rows.Scan(&namespace)
-		if err != nil {
-			return nil, err
-		}
-
-		list = append(list, model.NamespaceModel{Namespace: namespace})
+	list = make([]model.NamespaceModel, 0, rsp.Count)
+	for _, item := range rsp.Kvs {
+		list = append(list, model.NamespaceModel{Namespace: string(item.Value)})
 	}
 
 	return
 }
 
 func (c *client) GetAppidList(ctx context.Context, namespace string) (list []model.AppidModel, err error) {
-	conn, err := c.db.Conn(ctx)
+	prefix := model2.GenAppidPrefix(namespace)
+	var opts []clientV3.OpOption
+	opts = append(opts, clientV3.WithPrefix())
+
+	rsp, err := c.etcd.Get(ctx, prefix, opts...)
 	if err != nil {
 		return
 	}
-	defer conn.Close()
 
-	rows, err := conn.QueryContext(ctx, "SELECT `appid` FROM `infos` WHERE `namespace` = ? AND `level` = ?", namespace, 2)
-	if err != nil {
-		return
-	}
-	defer rows.Close()
-
-	list = make([]model.AppidModel, 0, 20)
-	for rows.Next() {
-		var appid string
-		err := rows.Scan(&appid)
-		if err != nil {
-			return nil, err
-		}
-
-		list = append(list, model.AppidModel{Appid: appid})
+	list = make([]model.AppidModel, 0, rsp.Count)
+	for _, item := range rsp.Kvs {
+		list = append(list, model.AppidModel{Appid: string(item.Value)})
 	}
 
 	return

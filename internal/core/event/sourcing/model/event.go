@@ -1,80 +1,93 @@
 package model
 
 import (
-	"net/url"
+	"github.com/cacos-group/cacos/internal/core/event/sourcing/qparams"
 )
 
 type Event struct {
 	EventType EventType
-	Args      url.Values
+	Params    qparams.Metadatas
+}
+
+type Cancel struct {
+}
+
+func NewInfoAppidPutEvent(namespace string, appid string) Event {
+	params := qparams.Metadatas{}
+	params.Set(qparams.Key, GenAppidKey(namespace, appid))
+	params.Set(qparams.Val, appid)
+
+	return Event{
+		EventType: InfoAppidPut,
+		Params:    params,
+	}
 }
 
 func NewAppidPutEvent(key string, val string) Event {
-	uv := url.Values{}
-	uv.Set("key", key)
-	uv.Set("val", val)
+	params := qparams.Metadatas{}
+	params.Set(qparams.Key, key)
+	params.Set(qparams.Val, val)
 
 	return Event{
 		EventType: AppidPut,
-		Args:      uv,
+		Params:    params,
 	}
 }
 
 func NewKVPutEvent(key string, val string) Event {
-	uv := url.Values{}
-	uv.Set("key", key)
-	uv.Set("val", val)
+	params := qparams.Metadatas{}
+	params.Set(qparams.Key, key)
+	params.Set(qparams.Val, val)
 
 	return Event{
 		EventType: KVPut,
-		Args:      uv,
+		Params:    params,
 	}
 }
 
-func NewUserAddEvent(key string, username string, password string) Event {
-	uv := url.Values{}
-	uv.Set("key", key)
-	uv.Set("user", username)
-	uv.Set("password", password)
+func NewUserAddEvent(key string, user string, password string) Event {
+	params := qparams.Metadatas{}
+	params.Set(qparams.Key, key)
+	params.Set(qparams.User, user)
+	params.Set(qparams.Password, password)
 
 	return Event{
 		EventType: UserAdd,
-		Args:      uv,
+		Params:    params,
 	}
 }
 
 func NewRoleAddEvent(key string, role string) Event {
-	uv := url.Values{}
-	uv.Set("key", key)
-	uv.Set("role", role)
+	params := qparams.Metadatas{}
+	params.Set(qparams.Key, key)
+	params.Set(qparams.Role, role)
 
 	return Event{
 		EventType: RoleAdd,
-		Args:      uv,
+		Params:    params,
 	}
 }
 
 func NewUserGrantRoleEvent(key string, user string, role string) Event {
-	uv := url.Values{}
-	uv.Set("key", key)
-	uv.Set("user", user)
-	uv.Set("role", role)
+	params := qparams.Metadatas{}
+	params.Set(qparams.Key, key)
+	params.Set(qparams.User, user)
+	params.Set(qparams.Role, role)
 
 	return Event{
 		EventType: UserGrantRole,
-		Args:      uv,
+		Params:    params,
 	}
 }
 
 func NewRoleGrantPermissionEvent(role string, key string, perm string) Event {
-	uv := url.Values{}
-	uv.Set("role", role)
-	uv.Set("key", key)
-	uv.Set("range", "\\0")
-	uv.Set("perm", perm)
+	params := qparams.Metadatas{}
+	params.Set(qparams.Role, role)
+	params.Set(qparams.Key, key)
+	params.Set(qparams.Perm, perm)
 
 	return Event{
 		EventType: RoleGrantPermission,
-		Args:      uv,
+		Params:    params,
 	}
 }

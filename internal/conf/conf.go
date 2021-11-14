@@ -17,7 +17,7 @@ func init() {
 
 type Config struct {
 	Etcd   EtcdConfig
-	Mysql  mysql
+	Mysql  MysqlConfig
 	Server server
 	Log    log
 	App    app
@@ -33,7 +33,7 @@ type http struct {
 //	maxIdleConns = 10
 //	connMaxLifetime = "60s"
 //  connMaxIdleTime ="4h"
-// EtcdConfig mysql conf.
+// EtcdConfig MysqlConfig conf.
 
 type EtcdConfig struct {
 	// Endpoints is a list of URLs.
@@ -93,7 +93,7 @@ type app struct {
 	Key         string
 }
 
-type mysql struct {
+type MysqlConfig struct {
 	DSN             string   // data source name.
 	MaxOpenConns    int      // pool
 	MaxIdleConns    int      // pool

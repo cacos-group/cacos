@@ -3,8 +3,9 @@ package strategy
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"github.com/cacos-group/cacos/internal/core/event/sourcing/model"
+	"github.com/cacos-group/cacos/internal/core/event/sourcing/qparams"
+	"github.com/cacos-group/cacos/internal/core/metadata"
 )
 
 type Namespace struct {
@@ -20,51 +21,26 @@ func NewNamespace(strategy *Strategy, db *sql.DB) *Namespace {
 	return n
 }
 
-func (s *Namespace) Prepare(ctx context.Context, namespace string, appid string) error {
-	conn, err := s.db.Conn(ctx)
-	if err != nil {
-		return err
+func (s *Namespace) GeneratorEvents(ctx context.Context, mds metadata.Metadatas) (list []model.Event) {
+	params := qparams.Metadatas{}
+	params.Set(qparams.Key, model.GenNamespaceKey(mds.Get(metadata.Namespace)))
+	params.Set(qparams.Val, mds.Get(metadata.Namespace))
+
+	list = []model.Event{
+		{
+			EventType: model.InfoNamespacePut,
+			Params:    params,
+		},
 	}
-	defer conn.Close()
-
-	tx, err := conn.BeginTx(ctx, nil)
-	if err != nil {
-		return err
-	}
-
-	err = func(tx *sql.Tx) (err error) {
-		// add namespace
-		_, err = conn.ExecContext(ctx, _addInfo, namespace, appid, 1)
-		if err != nil {
-			return err
-		}
-
-		tableName := GenTableName(namespace, appid)
-
-		// create event_log_%s_%s
-		_, err = tx.ExecContext(ctx, fmt.Sprintf(_createEventLogSql, tableName))
-		if err != nil {
-			return
-		}
-		return
-	}(tx)
-
-	if err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	tx.Commit()
-
-	return nil
+	return
 }
 
 func (s *Namespace) Presentation(ctx context.Context, tableName string, events []model.Event) error {
-	return nil
+	return s.Strategy.Presentation(ctx, tableName, events)
 }
 
 func (s *Namespace) Published(ctx context.Context, events []model.Event) error {
-	return nil
+	return s.Strategy.Published(ctx, events)
 }
 
 func (s *Namespace) Replayed(ctx context.Context) error {

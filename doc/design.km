@@ -1,0 +1,721 @@
+{
+    "root": {
+        "data": {
+            "id": "cfolhivwb340",
+            "created": 1636800878277,
+            "text": "设计方案"
+        },
+        "children": [
+            {
+                "data": {
+                    "id": "cfpr1ehrm6o0",
+                    "created": 1636918101505,
+                    "text": "数据一致性"
+                },
+                "children": [
+                    {
+                        "data": {
+                            "id": "cfpr1w3ymmw0",
+                            "created": 1636918139854,
+                            "text": "事件溯源模式"
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cfpr228qf6g0",
+                                    "created": 1636918153202,
+                                    "text": "Presentation（提交）"
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cfpr33ci23c0",
+                                            "created": 1636918233971,
+                                            "text": "mysql"
+                                        },
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cfpr4w076fk0",
+                                                    "created": 1636918374718,
+                                                    "text": "保存事件日志"
+                                                },
+                                                "children": []
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "data": {
+                                    "id": "cfpr2qt25a80",
+                                    "created": 1636918206674,
+                                    "text": "Published（发布）"
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cfpr3ff8sio0",
+                                            "created": 1636918260258,
+                                            "text": "etcd"
+                                        },
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cfpr6vb6t400",
+                                                    "created": 1636918529934,
+                                                    "text": "执行事件"
+                                                },
+                                                "children": []
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "data": {
+                                    "id": "cfpr2w6h8v40",
+                                    "created": 1636918218369,
+                                    "text": "Replayed（重放）"
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cfpr3g8qxoo0",
+                                            "created": 1636918262042,
+                                            "text": " "
+                                        },
+                                        "children": []
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "data": {
+                            "id": "cfprvjpw0a80",
+                            "created": 1636920463805,
+                            "text": "数据恢复"
+                        },
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "data": {
+                    "id": "cfpr8n9er4w0",
+                    "created": 1636918669140,
+                    "text": "技术",
+                    "expandState": "expand"
+                },
+                "children": [
+                    {
+                        "data": {
+                            "id": "cfpr8kif3ls0",
+                            "created": 1636918663155,
+                            "text": "mysql"
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cfpr96v0cfc0",
+                                    "created": 1636918711805,
+                                    "text": "读写事件日志"
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cfprkq5ol6g0",
+                                            "created": 1636919615815,
+                                            "text": "表event_log_{namespace}_{sharding}",
+                                            "expandState": "expand"
+                                        },
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cfol3tk6rxs0",
+                                                    "created": 1636799804416,
+                                                    "text": "event_type（事件类型）"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "data": {
+                                                            "id": "cfprqvt5rew0",
+                                                            "created": 1636920098304,
+                                                            "text": "InfoNamespacePut"
+                                                        },
+                                                        "children": []
+                                                    },
+                                                    {
+                                                        "data": {
+                                                            "id": "cfprqwj69dk0",
+                                                            "created": 1636920099877,
+                                                            "text": "InfoAppidPut"
+                                                        },
+                                                        "children": []
+                                                    },
+                                                    {
+                                                        "data": {
+                                                            "id": "cfol58xje2g0",
+                                                            "created": 1636799916239,
+                                                            "text": "AppidPut"
+                                                        },
+                                                        "children": []
+                                                    },
+                                                    {
+                                                        "data": {
+                                                            "id": "cfol5qnxtww0",
+                                                            "created": 1636799954840,
+                                                            "text": "KVPut"
+                                                        },
+                                                        "children": []
+                                                    },
+                                                    {
+                                                        "data": {
+                                                            "id": "cfol6cree280",
+                                                            "created": 1636800002939,
+                                                            "text": "UserAdd"
+                                                        },
+                                                        "children": []
+                                                    },
+                                                    {
+                                                        "data": {
+                                                            "id": "cfol6ipoie80",
+                                                            "created": 1636800015896,
+                                                            "text": "RoleAdd"
+                                                        },
+                                                        "children": []
+                                                    },
+                                                    {
+                                                        "data": {
+                                                            "id": "cfol6nuhnig0",
+                                                            "created": 1636800027070,
+                                                            "text": "UserGrantRole"
+                                                        },
+                                                        "children": []
+                                                    },
+                                                    {
+                                                        "data": {
+                                                            "id": "cfol6syfbaw0",
+                                                            "created": 1636800038192,
+                                                            "text": "RoleGrantPermission"
+                                                        },
+                                                        "children": []
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "cfprlvc3wk80",
+                                                    "created": 1636919705452,
+                                                    "text": "params（参数）"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "data": {
+                                                            "id": "cfprm5qzy740",
+                                                            "created": 1636919728120,
+                                                            "text": "foo=1&bar=2"
+                                                        },
+                                                        "children": []
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "data": {
+                            "id": "cfprkgb5ooo0",
+                            "created": 1636919594378,
+                            "text": "etcd"
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cfpr8tiihuo0",
+                                    "created": 1636918682751,
+                                    "text": "读写",
+                                    "expandState": "expand"
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cfoljjwyp0w0",
+                                            "created": 1636801037247,
+                                            "text": "namespace"
+                                        },
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cfprbivh3000",
+                                                    "created": 1636918894683,
+                                                    "text": "prefix"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "data": {
+                                                            "id": "cfprbrocseo0",
+                                                            "created": 1636918913843,
+                                                            "text": "/info/namespace/"
+                                                        },
+                                                        "children": []
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "cfprcsq945s0",
+                                                    "created": 1636918994499,
+                                                    "text": "key"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "data": {
+                                                            "id": "cfprcwda62o0",
+                                                            "created": 1636919002422,
+                                                            "text": "/info/namespace/{namespace}"
+                                                        },
+                                                        "children": []
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "cfprf4fttig0",
+                                                    "created": 1636919176719,
+                                                    "text": "val"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "data": {
+                                                            "id": "cfprf8cag800",
+                                                            "created": 1636919185212,
+                                                            "text": "{namespace}"
+                                                        },
+                                                        "children": []
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cfoljkjficg0",
+                                            "created": 1636801038605,
+                                            "text": "appid"
+                                        },
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cfprbl9vwvs0",
+                                                    "created": 1636918899908,
+                                                    "text": "prefix"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "data": {
+                                                            "id": "cfprdbq09eg0",
+                                                            "created": 1636919035843,
+                                                            "text": "/info/appid/{namespace}/"
+                                                        },
+                                                        "children": []
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "cfprd9nuerk0",
+                                                    "created": 1636919031359,
+                                                    "text": "key"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "data": {
+                                                            "id": "cfprdceebc80",
+                                                            "created": 1636919037318,
+                                                            "text": "/info/appid/{namespace}/{appid}"
+                                                        },
+                                                        "children": []
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "cfprexms7bk0",
+                                                    "created": 1636919161902,
+                                                    "text": "val"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "data": {
+                                                            "id": "cfprf0ee1l40",
+                                                            "created": 1636919167924,
+                                                            "text": "{appid}"
+                                                        },
+                                                        "children": []
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cfpr9y45dcw0",
+                                            "created": 1636918771131,
+                                            "text": "kv"
+                                        },
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cfpra7859fs0",
+                                                    "created": 1636918790964,
+                                                    "text": "prefix"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "data": {
+                                                            "id": "cfprifpx2og0",
+                                                            "created": 1636919436366,
+                                                            "text": "/{namespace}/{appid}/"
+                                                        },
+                                                        "children": []
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "cfprhsgy74w0",
+                                                    "created": 1636919385757,
+                                                    "text": "key"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "data": {
+                                                            "id": "cfpri0ludi80",
+                                                            "created": 1636919403468,
+                                                            "text": "/{namespace}/{appid}/{name}"
+                                                        },
+                                                        "children": []
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "cfprht9v6tc0",
+                                                    "created": 1636919387506,
+                                                    "text": "val"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "data": {
+                                                            "id": "cfprhx9rqxs0",
+                                                            "created": 1636919396207,
+                                                            "text": "{val}"
+                                                        },
+                                                        "children": []
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "data": {
+                            "id": "cfpr8u92u7k0",
+                            "created": 1636918684358,
+                            "text": "golang"
+                        },
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "data": {
+                    "id": "cfpr3os5sd40",
+                    "created": 1636918280630,
+                    "text": "业务逻辑",
+                    "expandState": "expand"
+                },
+                "children": [
+                    {
+                        "data": {
+                            "id": "cfolhmruxg80",
+                            "created": 1636800886740,
+                            "text": "读"
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cfolhxwv6pk0",
+                                    "created": 1636800910988,
+                                    "text": "GetNamespaceList"
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cfpriw51zkw0",
+                                            "created": 1636919472110,
+                                            "text": "etcd"
+                                        },
+                                        "children": []
+                                    }
+                                ]
+                            },
+                            {
+                                "data": {
+                                    "id": "cfolib35syo0",
+                                    "created": 1636800939666,
+                                    "text": "GetAppIdList"
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cfpriv7spaw0",
+                                            "created": 1636919470099,
+                                            "text": "etcd"
+                                        },
+                                        "children": []
+                                    }
+                                ]
+                            },
+                            {
+                                "data": {
+                                    "id": "cfolibouna00",
+                                    "created": 1636800940978,
+                                    "text": "GetKVList"
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cfoljl463fc0",
+                                            "created": 1636801039859,
+                                            "text": "etcd"
+                                        },
+                                        "children": []
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "data": {
+                            "id": "cfolhnt8k680",
+                            "created": 1636800889000,
+                            "text": "写"
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cfpqy7ccbq80",
+                                    "created": 1636917850847,
+                                    "text": "prepareEventLogStore"
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cfpqy4ysg2o0",
+                                            "created": 1636917845674,
+                                            "text": "mysql"
+                                        },
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cfpqyw22cds0",
+                                                    "created": 1636917904645,
+                                                    "text": "创建事件日志表event_log_{namespace}"
+                                                },
+                                                "children": []
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "data": {
+                                    "id": "cfoli97gzfs0",
+                                    "created": 1636800935574,
+                                    "text": "AddNamespace"
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cfpruf8tbts0",
+                                            "created": 1636920375702,
+                                            "text": "mysql、etcd"
+                                        },
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cfprpwxcl4g0",
+                                                    "created": 1636920022370,
+                                                    "text": "事件溯源模式"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "data": {
+                                                            "id": "cfprq8lv9fc0",
+                                                            "created": 1636920047797,
+                                                            "text": "事件"
+                                                        },
+                                                        "children": [
+                                                            {
+                                                                "data": {
+                                                                    "id": "cfprsdko1080",
+                                                                    "created": 1636920215336,
+                                                                    "text": "InfoNamespacePut"
+                                                                },
+                                                                "children": []
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "data": {
+                                    "id": "cfoli9xwl400",
+                                    "created": 1636800937172,
+                                    "text": "AddAppid"
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cfprunt8e4w0",
+                                            "created": 1636920394350,
+                                            "text": "mysql、etcd"
+                                        },
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cfprq3a29z40",
+                                                    "created": 1636920036199,
+                                                    "text": "事件溯源模式"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "data": {
+                                                            "id": "cfprq9mo7bk0",
+                                                            "created": 1636920050022,
+                                                            "text": "事件"
+                                                        },
+                                                        "children": [
+                                                            {
+                                                                "data": {
+                                                                    "id": "cfprsepukx40",
+                                                                    "created": 1636920217826,
+                                                                    "text": "InfoAppidPut"
+                                                                },
+                                                                "children": []
+                                                            },
+                                                            {
+                                                                "data": {
+                                                                    "id": "cfprsi7bfqw0",
+                                                                    "created": 1636920225413,
+                                                                    "text": "AppidPut"
+                                                                },
+                                                                "children": []
+                                                            },
+                                                            {
+                                                                "data": {
+                                                                    "id": "cfprsivzdnk0",
+                                                                    "created": 1636920226904,
+                                                                    "text": "UserAdd"
+                                                                },
+                                                                "children": []
+                                                            },
+                                                            {
+                                                                "data": {
+                                                                    "id": "cfprsjsmbqg0",
+                                                                    "created": 1636920228878,
+                                                                    "text": "RoleAdd"
+                                                                },
+                                                                "children": []
+                                                            },
+                                                            {
+                                                                "data": {
+                                                                    "id": "cfprt3r6wog0",
+                                                                    "created": 1636920272328,
+                                                                    "text": "UserGrantRole"
+                                                                },
+                                                                "children": []
+                                                            },
+                                                            {
+                                                                "data": {
+                                                                    "id": "cfprt4h8czs0",
+                                                                    "created": 1636920273902,
+                                                                    "text": "RoleGrantPermission"
+                                                                },
+                                                                "children": []
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "data": {
+                                    "id": "cfoliai5aiw0",
+                                    "created": 1636800938396,
+                                    "text": "AddKV"
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cfprupnxuio0",
+                                            "created": 1636920398384,
+                                            "text": "mysql、etcd"
+                                        },
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cfprq52nnb40",
+                                                    "created": 1636920040105,
+                                                    "text": "事件溯源模式"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "data": {
+                                                            "id": "cfprqa9y35k0",
+                                                            "created": 1636920051429,
+                                                            "text": "事件"
+                                                        },
+                                                        "children": [
+                                                            {
+                                                                "data": {
+                                                                    "id": "cfprssdhrs00",
+                                                                    "created": 1636920247554,
+                                                                    "text": "KVPut"
+                                                                },
+                                                                "children": []
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "template": "right",
+    "theme": "fresh-blue",
+    "version": "1.4.43"
+}

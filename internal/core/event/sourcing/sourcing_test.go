@@ -2,8 +2,9 @@ package sourcing
 
 import (
 	"context"
-	"github.com/cacos-group/cacos/internal/core/conf"
-	"github.com/cacos-group/cacos/internal/core/resource"
+	"fmt"
+	"github.com/cacos-group/cacos/internal/conf"
+	"github.com/cacos-group/cacos/internal/resource"
 	"testing"
 	"time"
 )
@@ -11,11 +12,9 @@ import (
 func testClient(t *testing.T) Client {
 	cfg := new(conf.Config)
 
-	cfg.Mysql = conf.MysqlConfig{
-		DSN:             "admin:admin@tcp(127.0.0.1:3306)/cacos",
-		ConnMaxLifetime: 60 * time.Second,
-		ConnMaxIdleTime: 6 * time.Hour,
-	}
+	cfg.Mysql.DSN = "admin:admin@tcp(127.0.0.1:3306)/cacos"
+	cfg.Mysql.ConnMaxLifetime = conf.Duration(60 * time.Second)
+	cfg.Mysql.ConnMaxIdleTime = conf.Duration(6 * time.Hour)
 
 	db, _, err := resource.NewDB(cfg)
 	if err != nil {
@@ -43,7 +42,7 @@ func testClient(t *testing.T) Client {
 
 func TestClient_AddNamespace(t *testing.T) {
 	c := testClient(t)
-	err := c.AddNamespace(context.Background(), "namespace5")
+	err := c.AddNamespace(context.Background(), fmt.Sprintf("namespace%d", time.Now().Unix()))
 	if err != nil {
 		t.Error(err)
 		return
@@ -53,7 +52,7 @@ func TestClient_AddNamespace(t *testing.T) {
 func TestClient_AddAppid(t *testing.T) {
 	c := testClient(t)
 
-	err := c.AddAppid(context.Background(), "namespace5", "appid9")
+	err := c.AddAppid(context.Background(), "namespace5", fmt.Sprintf("appid%d", time.Now().Unix()))
 	if err != nil {
 		t.Error(err)
 		return
@@ -63,7 +62,7 @@ func TestClient_AddAppid(t *testing.T) {
 func TestClient_AddKV(t *testing.T) {
 	c := testClient(t)
 
-	err := c.AddKV(context.Background(), "namespace5", "appid9", "key1", "val2")
+	err := c.AddKV(context.Background(), "namespace5", "appid9", fmt.Sprintf("key%d", time.Now().Unix()), fmt.Sprintf("val%d", time.Now().Unix()))
 	if err != nil {
 		t.Error(err)
 		return

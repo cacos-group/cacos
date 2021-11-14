@@ -6,8 +6,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/cacos-group/cacos/internal/core/event/sourcing/model"
+	sql2 "github.com/cacos-group/cacos/internal/core/event/sourcing/sql"
 	"github.com/cacos-group/cacos/internal/core/event/sourcing/strategy"
 	"github.com/cacos-group/cacos/internal/core/leaf"
+	"github.com/cacos-group/cacos/internal/core/metadata"
 	clientV3 "go.etcd.io/etcd/client/v3"
 )
 
@@ -24,9 +26,10 @@ type Client interface {
 }
 
 type EventSourcing interface {
-	Prepare(ctx context.Context, namespace string, appid string) error
+	GeneratorEvents(ctx context.Context, mds metadata.Metadatas) []model.Event
 	Presentation(ctx context.Context, tableName string, events []model.Event) error
 	Published(ctx context.Context, events []model.Event) error
+	Replayed(ctx context.Context) error
 }
 
 type client struct {
@@ -67,7 +70,23 @@ func (c *client) AddNamespace(ctx context.Context, namespace string) (err error)
 		return
 	}
 
-	err = es.Prepare(ctx, namespace, "")
+	err = c.prepareEventLogStore(ctx, namespace)
+	if err != nil {
+		return
+	}
+
+	mds := metadata.Metadatas{}
+	mds.Set(metadata.Namespace, namespace)
+
+	events := es.GeneratorEvents(ctx, mds)
+
+	tableName := strategy.GenTableName(namespace, 0)
+	err = es.Presentation(ctx, tableName, events)
+	if err != nil {
+		return
+	}
+
+	err = es.Published(ctx, events)
 	if err != nil {
 		return
 	}
@@ -81,38 +100,12 @@ func (c *client) AddAppid(ctx context.Context, namespace string, appid string) (
 		return
 	}
 
-	err = es.Prepare(ctx, namespace, appid)
-	if err != nil {
-		return
-	}
+	mds := metadata.Metadatas{}
+	mds.Set(metadata.Namespace, namespace)
+	mds.Set(metadata.Appid, appid)
+	events := es.GeneratorEvents(ctx, mds)
 
-	key := fmt.Sprintf("/%s/%s", namespace, appid)
-
-	events := make([]model.Event, 0, 5)
-
-	// event KVPut
-	events = append(events, model.NewAppidPutEvent(key, ""))
-
-	user := fmt.Sprintf("u_%s_%s", namespace, appid)
-	// todo 生成password 和 加密
-	password := "password"
-
-	// event UserAdd
-	events = append(events, model.NewUserAddEvent(key, user, password))
-
-	// event RoleAdd
-	role := fmt.Sprintf("%s_%s", namespace, appid)
-	events = append(events, model.NewRoleAddEvent(key, role))
-
-	// event UserGrantRole
-	events = append(events, model.NewUserGrantRoleEvent(key, user, role))
-
-	// event RoleGrantPermission
-	//todo 权限控制读写分离
-	permissionType := "2"
-	events = append(events, model.NewRoleGrantPermissionEvent(role, key, permissionType))
-
-	tableName := strategy.GenTableName(namespace, appid)
+	tableName := strategy.GenTableName(namespace, 0)
 	err = es.Presentation(ctx, tableName, events)
 	if err != nil {
 		return
@@ -132,18 +125,14 @@ func (c *client) AddKV(ctx context.Context, namespace string, appid string, name
 		return
 	}
 
-	err = es.Prepare(ctx, namespace, appid)
-	if err != nil {
-		return
-	}
-
 	key := fmt.Sprintf("/%s/%s/%s", namespace, appid, name)
 
-	events := make([]model.Event, 0)
-	// event KVPut
-	events = append(events, model.NewKVPutEvent(key, val))
+	mds := metadata.Metadatas{}
+	mds.Set(metadata.Key, key)
+	mds.Set(metadata.Val, val)
+	events := es.GeneratorEvents(ctx, mds)
 
-	tableName := strategy.GenTableName(namespace, appid)
+	tableName := strategy.GenTableName(namespace, 0)
 	err = es.Presentation(ctx, tableName, events)
 	if err != nil {
 		return
@@ -154,5 +143,22 @@ func (c *client) AddKV(ctx context.Context, namespace string, appid string, name
 		return
 	}
 
+	return
+}
+
+func (c *client) prepareEventLogStore(ctx context.Context, namespace string) (err error) {
+	conn, err := c.db.Conn(ctx)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	tableName := strategy.GenTableName(namespace, 0)
+
+	// create event_log_%s_%s
+	_, err = conn.ExecContext(ctx, fmt.Sprintf(sql2.CreateEventLogSql, tableName))
+	if err != nil {
+		return
+	}
 	return
 }

@@ -3,7 +3,9 @@ package strategy
 import (
 	"context"
 	"database/sql"
-	"strings"
+	"fmt"
+	"github.com/cacos-group/cacos/internal/core/event/sourcing/model"
+	"github.com/cacos-group/cacos/internal/core/metadata"
 )
 
 type Appid struct {
@@ -19,23 +21,31 @@ func NewAppid(strategy *Strategy, db *sql.DB) *Appid {
 	return n
 }
 
-func (s *Appid) Prepare(ctx context.Context, namespace string, appid string) error {
-	conn, err := s.db.Conn(ctx)
-	if err != nil {
-		return err
-	}
-	defer conn.Close()
+func (s *Appid) GeneratorEvents(ctx context.Context, mds metadata.Metadatas) (list []model.Event) {
+	namespace := mds.Get(metadata.Namespace)
+	appid := mds.Get(metadata.Appid)
 
-	// add appid
-	_, err = conn.ExecContext(ctx, _addInfo, namespace, appid, 2)
-	if err != nil {
-		if strings.Contains(err.Error(), "Error 1062: Duplicate entry") && strings.Contains(err.Error(), "for key 'uniq_namespace_appid'") {
-			return nil
-		}
-		return err
+	key := fmt.Sprintf("/%s/%s", namespace, appid)
+
+	user := fmt.Sprintf("u_%s_%s", namespace, appid)
+	// todo 生成password 和 加密
+	password := "password"
+
+	role := fmt.Sprintf("%s_%s", namespace, appid)
+
+	//todo 权限控制读写分离
+	permissionType := "2"
+
+	list = []model.Event{
+		model.NewInfoAppidPutEvent(namespace, appid),                 //
+		model.NewAppidPutEvent(key, ""),                              // event KVPut
+		model.NewUserAddEvent(key, user, password),                   // event UserAdd
+		model.NewRoleAddEvent(key, role),                             // event RoleAdd
+		model.NewUserGrantRoleEvent(key, user, role),                 // event UserGrantRole
+		model.NewRoleGrantPermissionEvent(role, key, permissionType), // // event RoleGrantPermission
 	}
 
-	return nil
+	return
 }
 
 func (s *Appid) Replayed(ctx context.Context) error {
