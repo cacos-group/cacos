@@ -17,7 +17,7 @@ Cacos是配置管理中心
 
 ### 数据模型和架构图
 
-![tech](https://f11.baidu.com/it/u=352677692,158135625&fm=30&app=106&f=JPEG&access=215967316?w=640&h=316&s=8451427C07725C2048C409580200C0F2)
+![tech](https://raw.githubusercontent.com/cacos-group/cacos/main/doc/sjmxjgt.jpg)
 
 ### 设计方案
-![design](https://f12.baidu.com/it/u=2976030758,158135616&fm=30&app=106&f=JPEG&access=215967316?w=640&h=969&s=59A81D72190B504F1EF560CA0000E0B2)
+![design](https://raw.githubusercontent.com/cacos-group/cacos/main/doc/design.png)
