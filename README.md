@@ -7,7 +7,11 @@ cacos server
 
 ## Cacos是什么？
 
-Cacos是配置管理中心，使用etcd、mysql存储，go语言开发。
+Cacos是配置管理中心
+
+* 1.mysql--存储事件日志
+* 2.etcd--存储和查询kv；访问权限控制；
+* 3.golang
 
 ## Cacos架构
 
