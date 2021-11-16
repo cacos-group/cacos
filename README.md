@@ -1,10 +1,6 @@
 # cacos-server
 cacos server
 
-## 设计文档
-
-[设计文档地址](https://mbd.baidu.com/newspage/data/landingshare?preview=1&pageType=1&isBdboxFrom=1&context=%7B%22nid%22%3A%22news_9477430390378252781%22%2C%22sourceFrom%22%3A%22bjh%22%7D)
-
 ## Cacos是什么？
 
 Cacos是配置管理中心
