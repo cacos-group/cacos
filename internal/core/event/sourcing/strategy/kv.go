@@ -29,7 +29,3 @@ func (s *KV) GeneratorEvents(ctx context.Context, mds metadata.Metadatas) (list 
 	}
 	return
 }
-
-func (s *KV) Replayed(ctx context.Context) error {
-	return nil
-}

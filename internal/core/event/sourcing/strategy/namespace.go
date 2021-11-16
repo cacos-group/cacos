@@ -34,15 +34,3 @@ func (s *Namespace) GeneratorEvents(ctx context.Context, mds metadata.Metadatas)
 	}
 	return
 }
-
-func (s *Namespace) Presentation(ctx context.Context, tableName string, events []model.Event) error {
-	return s.Strategy.Presentation(ctx, tableName, events)
-}
-
-func (s *Namespace) Published(ctx context.Context, events []model.Event) error {
-	return s.Strategy.Published(ctx, events)
-}
-
-func (s *Namespace) Replayed(ctx context.Context) error {
-	return nil
-}

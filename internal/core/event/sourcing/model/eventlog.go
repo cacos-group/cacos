@@ -12,9 +12,9 @@ const (
 	UserGrantRole       EventType = "UserGrantRole"
 	RoleGrantPermission EventType = "RoleGrantPermission"
 
-	AppidDel             EventType = "AppidDel"
-	UserDel              EventType = "UserDel"
-	RoleDel              EventType = "RoleDel"
-	UserRevokeRole       EventType = "UserRevokeRole"
-	RoleRevokePermission EventType = "RoleRevokePermission"
+	InfoAppidDel EventType = "InfoAppidDel"
+	AppidDel     EventType = "AppidDel"
+	KVDel        EventType = "KVDel"
+	UserDel      EventType = "UserDel"
+	RoleDel      EventType = "RoleDel"
 )
