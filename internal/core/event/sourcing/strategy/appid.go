@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/cacos-group/cacos/internal/core/event/sourcing/model"
 	"github.com/cacos-group/cacos/internal/core/metadata"
+	clientV3 "go.etcd.io/etcd/client/v3"
 )
 
 type Appid struct {
@@ -33,8 +34,8 @@ func (s *Appid) GeneratorEvents(ctx context.Context, mds metadata.Metadatas) (li
 
 	role := fmt.Sprintf("%s_%s", namespace, appid)
 
-	//todo 权限控制读写分离
-	permissionType := "2"
+	// 只读权限
+	permissionType := string(clientV3.PermRead)
 
 	list = []model.Event{
 		model.NewInfoAppidPutEvent(namespace, appid),                 //
