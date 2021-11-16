@@ -83,35 +83,17 @@
                                         "data": {
                                             "id": "cfpr3g8qxoo0",
                                             "created": 1636918262042,
-                                            "text": "重试失败事件"
+                                            "text": "重试"
                                         },
-                                        "children": [
-                                            {
-                                                "data": {
-                                                    "id": "cfr4u2gudg80",
-                                                    "created": 1637058582274,
-                                                    "text": "成功"
-                                                },
-                                                "children": []
-                                            },
-                                            {
-                                                "data": {
-                                                    "id": "cfr4u3b05a00",
-                                                    "created": 1637058584098,
-                                                    "text": "失败"
-                                                },
-                                                "children": [
-                                                    {
-                                                        "data": {
-                                                            "id": "cfr4uk4gn9s0",
-                                                            "created": 1637058620708,
-                                                            "text": "补偿事件"
-                                                        },
-                                                        "children": []
-                                                    }
-                                                ]
-                                            }
-                                        ]
+                                        "children": []
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cfr53b17piw0",
+                                            "created": 1637059306198,
+                                            "text": "补偿"
+                                        },
+                                        "children": []
                                     }
                                 ]
                             }
