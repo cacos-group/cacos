@@ -9,13 +9,13 @@ import (
 )
 
 type Namespace struct {
-	*Strategy
+	*strategy
 	db *sql.DB
 }
 
-func NewNamespace(strategy *Strategy, db *sql.DB) *Namespace {
+func NewNamespace(strategy *strategy, db *sql.DB) *Namespace {
 	n := &Namespace{}
-	n.Strategy = strategy
+	n.strategy = strategy
 	n.db = db
 
 	return n

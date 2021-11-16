@@ -8,13 +8,13 @@ import (
 )
 
 type KV struct {
-	*Strategy
+	*strategy
 	db *sql.DB
 }
 
-func NewKV(strategy *Strategy, db *sql.DB) *KV {
+func NewKV(strategy *strategy, db *sql.DB) *KV {
 	n := &KV{}
-	n.Strategy = strategy
+	n.strategy = strategy
 	n.db = db
 
 	return n

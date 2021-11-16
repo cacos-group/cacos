@@ -12,23 +12,80 @@ import (
 	"strconv"
 )
 
-type Strategy struct {
-	db   *sql.DB
-	etcd *clientv3.Client
+type strategy struct {
+	db               *sql.DB
+	etcd             *clientv3.Client
+	eventSourcingMap map[model.EventSourcingName]EventSourcing
 }
 
-func NewStrategy(db *sql.DB, etcd *clientv3.Client) *Strategy {
-	return &Strategy{
-		db:   db,
-		etcd: etcd,
+type Strategy interface {
+	Handler(ctx context.Context, esn model.EventSourcingName, mds metadata.Metadatas) error
+}
+
+type EventSourcing interface {
+	GeneratorEvents(ctx context.Context, mds metadata.Metadatas) []model.Event
+	Presentation(ctx context.Context, tableName string, events []model.Event) error
+	Published(ctx context.Context, events []model.Event) (offset int, err error)
+	Replayed(ctx context.Context, tableName string, events []model.Event, offset int) (isRetrySuccess bool, err error)
+}
+
+func New(db *sql.DB, etcd *clientv3.Client) Strategy {
+	s := &strategy{
+		db:               db,
+		etcd:             etcd,
+		eventSourcingMap: make(map[model.EventSourcingName]EventSourcing),
 	}
+	s.eventSourcingMap[model.AddNamespace] = NewNamespace(s, db)
+	s.eventSourcingMap[model.AddAppid] = NewAppid(s, db)
+	s.eventSourcingMap[model.AddKV] = NewKV(s, db)
+
+	return s
 }
 
-func (s *Strategy) GeneratorEvents(ctx context.Context, mds metadata.Metadatas) (list []model.Event) {
+func (s *strategy) getStrategy(esn model.EventSourcingName) (EventSourcing, error) {
+	es, ok := s.eventSourcingMap[esn]
+	if !ok {
+		return nil, errors.New("event sourcing undefined")
+	}
+
+	return es.(EventSourcing), nil
+}
+
+func (s *strategy) Handler(ctx context.Context, esn model.EventSourcingName, mds metadata.Metadatas) (err error) {
+	es, err := s.getStrategy(esn)
+	if err != nil {
+		return
+	}
+
+	events := es.GeneratorEvents(ctx, mds)
+
+	tableName := GenTableName(mds.Get(metadata.Namespace), 0)
+	err = es.Presentation(ctx, tableName, events)
+	if err != nil {
+		return
+	}
+
+	offset, err := es.Published(ctx, events)
+	if err != nil {
+		isRetrySuccess, replayedErr := s.Replayed(ctx, tableName, events, offset)
+		if replayedErr != nil {
+			return replayedErr
+		}
+
+		if isRetrySuccess == true {
+			return nil
+		}
+
+		return err
+	}
 	return
 }
 
-func (s *Strategy) Presentation(ctx context.Context, tableName string, events []model.Event) (err error) {
+func (s *strategy) GeneratorEvents(ctx context.Context, mds metadata.Metadatas) (list []model.Event) {
+	return
+}
+
+func (s *strategy) Presentation(ctx context.Context, tableName string, events []model.Event) (err error) {
 	conn, err := s.db.Conn(ctx)
 	if err != nil {
 		return err
@@ -46,12 +103,16 @@ func (s *Strategy) Presentation(ctx context.Context, tableName string, events []
 		return
 	}
 
-	tx.Commit()
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback()
+		return
+	}
 
 	return nil
 }
 
-func (s *Strategy) store(tx *sql.Tx, ctx context.Context, tableName string, events []model.Event) (err error) {
+func (s *strategy) store(tx *sql.Tx, ctx context.Context, tableName string, events []model.Event) (err error) {
 	for _, event := range events {
 		if event.EventType == model.AppidPut {
 			row := tx.QueryRow(fmt.Sprintf(_existsEventLogSql, tableName), event.EventType, event.Params.Encode())
@@ -78,7 +139,7 @@ func (s *Strategy) store(tx *sql.Tx, ctx context.Context, tableName string, even
 	return nil
 }
 
-func (s *Strategy) Published(ctx context.Context, events []model.Event) (offset int, err error) {
+func (s *strategy) Published(ctx context.Context, events []model.Event) (offset int, err error) {
 	for _, event := range events {
 		err = s.execEvent(ctx, event)
 		if err != nil {
@@ -94,7 +155,7 @@ func (s *Strategy) Published(ctx context.Context, events []model.Event) (offset 
 	return
 }
 
-func (s *Strategy) execEvent(ctx context.Context, event model.Event) (err error) {
+func (s *strategy) execEvent(ctx context.Context, event model.Event) (err error) {
 	switch event.EventType {
 	case model.InfoNamespacePut, model.InfoAppidPut:
 		_, err = s.etcd.KV.Put(ctx, event.Params.Get(qparams.Key), event.Params.Get(qparams.Val))
@@ -127,7 +188,7 @@ func (s *Strategy) execEvent(ctx context.Context, event model.Event) (err error)
 	return
 }
 
-func (s *Strategy) Replayed(ctx context.Context, tableName string, events []model.Event, offset int) (isRetrySuccess bool, err error) {
+func (s *strategy) Replayed(ctx context.Context, tableName string, events []model.Event, offset int) (isRetrySuccess bool, err error) {
 	//todo retry次数
 	for offset < len(events) {
 		err = s.execEvent(ctx, events[offset])

@@ -9,13 +9,13 @@ import (
 )
 
 type Appid struct {
-	*Strategy
+	*strategy
 	db *sql.DB
 }
 
-func NewAppid(strategy *Strategy, db *sql.DB) *Appid {
+func NewAppid(strategy *strategy, db *sql.DB) *Appid {
 	n := &Appid{}
-	n.Strategy = strategy
+	n.strategy = strategy
 	n.db = db
 
 	return n
