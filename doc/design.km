@@ -83,11 +83,62 @@
                                         "data": {
                                             "id": "cfpr3g8qxoo0",
                                             "created": 1636918262042,
-                                            "text": " "
+                                            "text": "重试失败事件"
                                         },
-                                        "children": []
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cfr4u2gudg80",
+                                                    "created": 1637058582274,
+                                                    "text": "成功"
+                                                },
+                                                "children": []
+                                            },
+                                            {
+                                                "data": {
+                                                    "id": "cfr4u3b05a00",
+                                                    "created": 1637058584098,
+                                                    "text": "失败"
+                                                },
+                                                "children": [
+                                                    {
+                                                        "data": {
+                                                            "id": "cfr4uk4gn9s0",
+                                                            "created": 1637058620708,
+                                                            "text": "补偿事件"
+                                                        },
+                                                        "children": []
+                                                    }
+                                                ]
+                                            }
+                                        ]
                                     }
                                 ]
+                            }
+                        ]
+                    },
+                    {
+                        "data": {
+                            "id": "cfr1q2v93sg0",
+                            "created": 1637049806359,
+                            "text": "计划任务"
+                        },
+                        "children": [
+                            {
+                                "data": {
+                                    "id": "cfr1qe2ux8o0",
+                                    "created": 1637049830764,
+                                    "text": "异常恢复"
+                                },
+                                "children": []
+                            },
+                            {
+                                "data": {
+                                    "id": "cfr1qepltns0",
+                                    "created": 1637049832139,
+                                    "text": "事件日志重写"
+                                },
+                                "children": []
                             }
                         ]
                     },

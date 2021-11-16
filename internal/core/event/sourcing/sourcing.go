@@ -28,8 +28,8 @@ type Client interface {
 type EventSourcing interface {
 	GeneratorEvents(ctx context.Context, mds metadata.Metadatas) []model.Event
 	Presentation(ctx context.Context, tableName string, events []model.Event) error
-	Published(ctx context.Context, events []model.Event) error
-	Replayed(ctx context.Context) error
+	Published(ctx context.Context, events []model.Event) (offset int, err error)
+	Replayed(ctx context.Context, tableName string, events []model.Event, offset int) (isRetrySuccess bool, err error)
 }
 
 type client struct {
@@ -86,11 +86,10 @@ func (c *client) AddNamespace(ctx context.Context, namespace string) (err error)
 		return
 	}
 
-	err = es.Published(ctx, events)
+	err = c.published(es, ctx, tableName, events)
 	if err != nil {
 		return
 	}
-
 	return
 }
 
@@ -111,9 +110,27 @@ func (c *client) AddAppid(ctx context.Context, namespace string, appid string) (
 		return
 	}
 
-	err = es.Published(ctx, events)
+	err = c.published(es, ctx, tableName, events)
 	if err != nil {
 		return
+	}
+
+	return nil
+}
+
+func (c *client) published(es EventSourcing, ctx context.Context, tableName string, events []model.Event) error {
+	offset, err := es.Published(ctx, events)
+	if err != nil {
+		isRetrySuccess, replayedErr := es.Replayed(ctx, tableName, events, offset)
+		if replayedErr != nil {
+			return replayedErr
+		}
+
+		if isRetrySuccess == true {
+			return nil
+		}
+
+		return err
 	}
 
 	return nil
@@ -138,7 +155,7 @@ func (c *client) AddKV(ctx context.Context, namespace string, appid string, name
 		return
 	}
 
-	err = es.Published(ctx, events)
+	err = c.published(es, ctx, tableName, events)
 	if err != nil {
 		return
 	}

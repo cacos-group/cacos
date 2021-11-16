@@ -47,7 +47,3 @@ func (s *Appid) GeneratorEvents(ctx context.Context, mds metadata.Metadatas) (li
 
 	return
 }
-
-func (s *Appid) Replayed(ctx context.Context) error {
-	return nil
-}
