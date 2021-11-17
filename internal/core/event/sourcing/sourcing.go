@@ -95,11 +95,28 @@ func (c *client) prepareEventLogStore(ctx context.Context, namespace string) (er
 	defer conn.Close()
 
 	tableName := strategy.GenTableName(namespace, 0)
+	redoTableName := strategy.GenRedoTableName(tableName)
+
+	tx, err := conn.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
 
 	// create event_log_%s_%s
-	_, err = conn.ExecContext(ctx, fmt.Sprintf(sql2.CreateEventLogSql, tableName))
+	_, err = tx.ExecContext(ctx, fmt.Sprintf(sql2.CreateEventLogSql, tableName))
 	if err != nil {
+		tx.Rollback()
 		return
 	}
+
+	// create redo_log_%s_%s
+	_, err = tx.ExecContext(ctx, fmt.Sprintf(sql2.CreateEventLogSql, redoTableName))
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+
+	tx.Commit()
+
 	return
 }

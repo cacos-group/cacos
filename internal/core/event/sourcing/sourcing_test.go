@@ -52,7 +52,8 @@ func TestClient_AddNamespace(t *testing.T) {
 func TestClient_AddAppid(t *testing.T) {
 	c := testClient(t)
 
-	err := c.AddAppid(context.Background(), "namespace5", fmt.Sprintf("appid%d", time.Now().Unix()))
+	err := c.AddNamespace(context.Background(), "namespace23")
+	err = c.AddAppid(context.Background(), "namespace23", fmt.Sprintf("appid%d", time.Now().Unix()))
 	if err != nil {
 		t.Error(err)
 		return

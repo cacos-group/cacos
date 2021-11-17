@@ -22,23 +22,23 @@
                         "children": [
                             {
                                 "data": {
-                                    "id": "cfpr228qf6g0",
-                                    "created": 1636918153202,
-                                    "text": "Presentation（提交）"
+                                    "id": "cfs1n07l1zs0",
+                                    "created": 1637151125439,
+                                    "text": "wal"
                                 },
                                 "children": [
                                     {
                                         "data": {
-                                            "id": "cfpr33ci23c0",
-                                            "created": 1636918233971,
+                                            "id": "cfs1ot2955k0",
+                                            "created": 1637151266607,
                                             "text": "mysql"
                                         },
                                         "children": [
                                             {
                                                 "data": {
-                                                    "id": "cfpr4w076fk0",
-                                                    "created": 1636918374718,
-                                                    "text": "保存事件日志"
+                                                    "id": "cfs1owj1b680",
+                                                    "created": 1637151274152,
+                                                    "text": "预写事件日志"
                                                 },
                                                 "children": []
                                             }
@@ -83,17 +83,96 @@
                                         "data": {
                                             "id": "cfpr3g8qxoo0",
                                             "created": 1636918262042,
-                                            "text": "重试"
+                                            "text": "etcd"
                                         },
-                                        "children": []
-                                    },
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cfs1r1e9tcw0",
+                                                    "created": 1637151441476,
+                                                    "text": "重试执行事件"
+                                                },
+                                                "children": []
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "data": {
+                                    "id": "cfs1qbm7ec80",
+                                    "created": 1637151385360,
+                                    "text": "cancelExecutedEvent"
+                                },
+                                "children": [
                                     {
                                         "data": {
-                                            "id": "cfr53b17piw0",
-                                            "created": 1637059306198,
-                                            "text": "补偿"
+                                            "id": "cfs1qa6lp140",
+                                            "created": 1637151382240,
+                                            "text": "etcd"
                                         },
-                                        "children": []
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cfs1r530ifs0",
+                                                    "created": 1637151449503,
+                                                    "text": "执行补偿事件"
+                                                },
+                                                "children": []
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "data": {
+                                    "id": "cfs1n0wfbuo0",
+                                    "created": 1637151126941,
+                                    "text": "commit"
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cfs1pasxj4w0",
+                                            "created": 1637151305226,
+                                            "text": "mysql"
+                                        },
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cfs1pcer48g0",
+                                                    "created": 1637151308722,
+                                                    "text": "保存事件日志"
+                                                },
+                                                "children": []
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "data": {
+                                    "id": "cfs1nja0v2w0",
+                                    "created": 1637151166945,
+                                    "text": "rollback"
+                                },
+                                "children": [
+                                    {
+                                        "data": {
+                                            "id": "cfs1pf09zjs0",
+                                            "created": 1637151314377,
+                                            "text": "mysql"
+                                        },
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cfs1pizs53s0",
+                                                    "created": 1637151323054,
+                                                    "text": "删除预写事件日志"
+                                                },
+                                                "children": []
+                                            }
+                                        ]
                                     }
                                 ]
                             }
@@ -111,14 +190,6 @@
                                     "id": "cfr1qe2ux8o0",
                                     "created": 1637049830764,
                                     "text": "异常恢复"
-                                },
-                                "children": []
-                            },
-                            {
-                                "data": {
-                                    "id": "cfr1qepltns0",
-                                    "created": 1637049832139,
-                                    "text": "事件日志重写"
                                 },
                                 "children": []
                             }
@@ -253,6 +324,23 @@
                                                         "children": []
                                                     }
                                                 ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "data": {
+                                            "id": "cfs1rf9koo80",
+                                            "created": 1637151471667,
+                                            "text": "表redo_log_{namespace}_{sharding}"
+                                        },
+                                        "children": [
+                                            {
+                                                "data": {
+                                                    "id": "cfs1rlxmw2g0",
+                                                    "created": 1637151486183,
+                                                    "text": "同上"
+                                                },
+                                                "children": []
                                             }
                                         ]
                                     }

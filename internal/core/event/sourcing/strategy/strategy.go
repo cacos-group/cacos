@@ -10,6 +10,8 @@ import (
 	"github.com/cacos-group/cacos/internal/core/metadata"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"strconv"
+	"strings"
+	"time"
 )
 
 type strategy struct {
@@ -24,9 +26,6 @@ type Strategy interface {
 
 type EventSourcing interface {
 	GeneratorEvents(ctx context.Context, mds metadata.Metadatas) []model.Event
-	Presentation(ctx context.Context, tableName string, events []model.Event) error
-	Published(ctx context.Context, events []model.Event) (offset int, err error)
-	Replayed(ctx context.Context, tableName string, events []model.Event, offset int) (isRetrySuccess bool, err error)
 }
 
 func New(db *sql.DB, etcd *clientv3.Client) Strategy {
@@ -60,32 +59,49 @@ func (s *strategy) Handler(ctx context.Context, esn model.EventSourcingName, mds
 	events := es.GeneratorEvents(ctx, mds)
 
 	tableName := GenTableName(mds.Get(metadata.Namespace), 0)
-	err = es.Presentation(ctx, tableName, events)
+
+	err = s.wal(ctx, GenRedoTableName(tableName), events)
 	if err != nil {
 		return
 	}
 
-	offset, err := es.Published(ctx, events)
+	trxID := 0
+	offset, err := s.Published(ctx, events)
+	if err == nil {
+		err = s.commit(ctx, tableName, trxID)
+		if err != nil {
+			return err
+		}
+		return
+	}
+
+	newOffset, replayedErr := s.Replayed(ctx, tableName, events, offset)
+	if replayedErr == nil {
+		err = s.commit(ctx, tableName, trxID)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	ceeErr := s.cancelExecutedEvent(ctx, events, newOffset)
+	if ceeErr != nil {
+		return ceeErr
+	}
+
+	err = s.rollback(ctx, tableName, trxID)
 	if err != nil {
-		isRetrySuccess, replayedErr := s.Replayed(ctx, tableName, events, offset)
-		if replayedErr != nil {
-			return replayedErr
-		}
-
-		if isRetrySuccess == true {
-			return nil
-		}
-
 		return err
 	}
-	return
+
+	return nil
 }
 
 func (s *strategy) GeneratorEvents(ctx context.Context, mds metadata.Metadatas) (list []model.Event) {
 	return
 }
 
-func (s *strategy) Presentation(ctx context.Context, tableName string, events []model.Event) (err error) {
+func (s *strategy) wal(ctx context.Context, tableName string, events []model.Event) (err error) {
 	conn, err := s.db.Conn(ctx)
 	if err != nil {
 		return err
@@ -103,11 +119,7 @@ func (s *strategy) Presentation(ctx context.Context, tableName string, events []
 		return
 	}
 
-	err = tx.Commit()
-	if err != nil {
-		tx.Rollback()
-		return
-	}
+	tx.Commit()
 
 	return nil
 }
@@ -126,17 +138,53 @@ func (s *strategy) store(tx *sql.Tx, ctx context.Context, tableName string, even
 			}
 		}
 
-		if event.EventType == model.KVDel {
-			// todo
-		} else {
-			// todo major
-			_, err = tx.ExecContext(ctx, fmt.Sprintf(_addEventLogSql, tableName), event.EventType, event.Params.Encode(), "")
-			if err != nil {
-				return err
-			}
+		// todo major
+		_, err = tx.ExecContext(ctx, fmt.Sprintf(_addEventLogSql, tableName), event.EventType, event.Params.Encode(), "", time.Now().Format("2006-01-02 15:04:05"))
+		if err != nil {
+			return err
 		}
+
 	}
 	return nil
+}
+
+func (s *strategy) commit(ctx context.Context, tableName string, trxID int) (err error) {
+	conn, err := s.db.Conn(ctx)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+	tx, err := conn.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	err = func() (err error) {
+		_sql := "INSERT INTO %s (`trx_id`, `event_type`, `params`, `major`, `event_time`) SELECT `trx_id`, `event_type`, `params`, `major`, `event_time` FROM %s WHERE `trx_id` = ?"
+		query := fmt.Sprintf(_sql, tableName, strings.Replace(tableName, "event_log", "redo_log", 1))
+		_, err = tx.ExecContext(ctx, query, trxID)
+		if err != nil {
+			return
+		}
+
+		_sql2 := "DELETE FROM %s WHERE `trx_id` = ?"
+		query2 := fmt.Sprintf(_sql2, strings.Replace(tableName, "event_log", "redo_log", 1))
+		_, err = tx.ExecContext(ctx, query2, trxID)
+		if err != nil {
+			return
+		}
+
+		return
+	}()
+
+	if err != nil {
+		_ = tx.Rollback()
+		return
+	}
+
+	_ = tx.Commit()
+
+	return
 }
 
 func (s *strategy) Published(ctx context.Context, events []model.Event) (offset int, err error) {
@@ -188,7 +236,7 @@ func (s *strategy) execEvent(ctx context.Context, event model.Event) (err error)
 	return
 }
 
-func (s *strategy) Replayed(ctx context.Context, tableName string, events []model.Event, offset int) (isRetrySuccess bool, err error) {
+func (s *strategy) Replayed(ctx context.Context, tableName string, events []model.Event, offset int) (newOffset int, err error) {
 	//todo retry次数
 	for offset < len(events) {
 		err = s.execEvent(ctx, events[offset])
@@ -199,38 +247,16 @@ func (s *strategy) Replayed(ctx context.Context, tableName string, events []mode
 		offset++
 	}
 
-	if err == nil {
-		return true, nil
-	}
+	newOffset = offset
 
-	// 写入补偿事件
-	cancels := make([]model.Event, 0, len(events))
-	for _, event := range events {
-		if event.Cancel.EventType != "" {
-			cancels = append(cancels, event.Cancel.Format())
-		}
-	}
-
-	conn, err := s.db.Conn(ctx)
 	if err != nil {
-		return false, err
-	}
-	defer conn.Close()
-
-	tx, err := conn.BeginTx(ctx, nil)
-	if err != nil {
-		return false, err
-	}
-
-	err = s.store(tx, ctx, tableName, cancels)
-	if err != nil {
-		tx.Rollback()
-		//todo 计划任务恢复
 		return
 	}
 
-	tx.Commit()
+	return
+}
 
+func (s *strategy) cancelExecutedEvent(ctx context.Context, events []model.Event, offset int) (err error) {
 	// 执行补偿事件
 	successEvents := events[:offset]
 	for _, event := range successEvents {
@@ -241,11 +267,25 @@ func (s *strategy) Replayed(ctx context.Context, tableName string, events []mode
 			}
 		}
 	}
-
 	if err != nil {
 		//todo 计划任务恢复
 		return
 	}
+	return
+}
 
-	return false, nil
+func (s *strategy) rollback(ctx context.Context, tableName string, trxID int) (err error) {
+	conn, err := s.db.Conn(ctx)
+	if err != nil {
+		return err
+	}
+
+	_sql2 := "DELETE FROM %s WHERE `trx_id` = ?"
+	query2 := fmt.Sprintf(_sql2, strings.Replace(tableName, "event_log", "redo_log", 1))
+	_, err = conn.ExecContext(ctx, query2, trxID)
+	if err != nil {
+		return
+	}
+
+	return
 }

@@ -106,7 +106,6 @@ func (s *Service) KvList(ctx context.Context, in *api.KVListReq) (out *api.KVLis
 }
 
 func (s *Service) AddNamespace(ctx context.Context, in *api.AddNamespaceReq) (out *empty.Empty, err error) {
-
 	err = s.eventSourcing.AddNamespace(ctx, in.Namespace)
 	if err != nil {
 		return
