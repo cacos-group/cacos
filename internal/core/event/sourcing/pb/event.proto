@@ -1,0 +1,88 @@
+// 定义项目 API 的 proto 文件 可以同时描述 gRPC 和 HTTP API
+// protobuf 文件参考:
+//  - https://developers.google.com/protocol-buffers/
+syntax = "proto3";
+
+option go_package = "github.com/cacos-group/cacos/internal/core/event/sourcing/pb";
+
+package pb;
+
+message KVPut {
+    string Key = 1;
+    string Val = 2;
+}
+
+message NamespacePut {
+    string Key = 1;
+    string Val = 2;
+}
+
+message ServicePut {
+    string Key = 1;
+    string Val = 2;
+}
+
+message UserAdd {
+    string Key = 1;
+    string User = 2;
+    string Password = 3;
+}
+
+message RoleAdd {
+    string Role = 1;
+}
+
+message UserGrantRole {
+    string User = 1;
+    string Role = 2;
+}
+
+message RoleGrantPermission {
+    string Role = 1;
+    string Key = 2;
+    int32 Perm = 3;
+}
+
+message NamespaceDel {
+    string Key = 1;
+}
+
+message ServiceDel {
+    string Key = 1;
+}
+
+message UserDel {
+    string User = 1;
+}
+
+message RoleDel {
+    string Role = 1;
+}
+
+message  Event {
+//    enum EventType {
+//        Default = 0;
+//        Namespace_Put = 1;
+//        Service_Put = 2;
+//        KV_Put = 3;
+//        User_Add = 4;
+//        Role_Add = 5;
+//        User_Grant_Role = 6;
+//        Role_Grant_Permission = 7;
+//    }
+//    EventType eventType = 1[json_name = "event_type"];
+
+    oneof payload {
+        KVPut kvPut = 2;
+        NamespacePut namespacePut = 3;
+        ServicePut servicePut = 4;
+        UserAdd userAdd = 5;
+        RoleAdd roleAdd = 6;
+        UserGrantRole userGrantRole = 7;
+        RoleGrantPermission roleGrantPermission = 8;
+        NamespaceDel namespaceDel = 9;
+        ServiceDel serviceDel = 10;
+        UserDel userDel = 11;
+        RoleDel roleDel = 12;
+    }
+}

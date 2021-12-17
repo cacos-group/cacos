@@ -32,6 +32,7 @@ func testClient(t *testing.T) Client {
 	c, _, err := resource.NewEtcd(cfg)
 	if err != nil {
 		t.Error(err)
+		panic(err)
 		return nil
 	}
 
@@ -63,7 +64,7 @@ func TestClient_AddAppid(t *testing.T) {
 func TestClient_AddKV(t *testing.T) {
 	c := testClient(t)
 
-	err := c.AddKV(context.Background(), "namespace5", "appid9", fmt.Sprintf("key%d", time.Now().Unix()), fmt.Sprintf("val%d", time.Now().Unix()))
+	err := c.AddKV(context.Background(), "namespace23", "appid1639208198", fmt.Sprintf("key%d", time.Now().Unix()), fmt.Sprintf("val%d", time.Now().Unix()))
 	if err != nil {
 		t.Error(err)
 		return

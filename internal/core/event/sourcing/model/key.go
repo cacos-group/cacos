@@ -3,11 +3,16 @@ package model
 import "fmt"
 
 const (
-	etcdNamespacePrefix = "/info/namespace/"
-	etcdNamespaceKey    = "/info/namespace/%s"
+	etcdNamespacePrefix = "/cacos/namespaces/"
+	etcdNamespaceKey    = "/cacos/namespaces/%s"
 
-	etcdAppidPrefix = "/info/appid/%s/"
-	etcdAppidKey    = "/info/appid/%s/%s"
+	etcdAppidPrefix = "/cacos/services/%s/"
+	etcdAppidKey    = "/cacos/services/%s/%s"
+
+	// /cacos/kvs/{namespace}/{service}/
+	storeKVPrefix = "/cacos/kvs/%s/%s/"
+	// /cacos/kvs/{namespace}/{service}/{k}
+	storeKV = "/cacos/kvs/%s/%s/%s"
 )
 
 func GenNamespacePrefix() string {
@@ -24,4 +29,12 @@ func GenAppidPrefix(namespace string) string {
 
 func GenAppidKey(namespace string, appid string) string {
 	return fmt.Sprintf(etcdAppidKey, namespace, appid)
+}
+
+func GenStoreKVPrefix(namespace string, service string) string {
+	return fmt.Sprintf(storeKVPrefix, namespace, service)
+}
+
+func GenStoreKV(namespace string, service string, k string) string {
+	return fmt.Sprintf(storeKV, namespace, service, k)
 }
